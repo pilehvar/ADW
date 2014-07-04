@@ -82,7 +82,7 @@ public class WordNetUtils
 		}
 		else
 		{
-			System.out.println("[ERROR: non matching regular expression at "+ wordSense);
+			System.out.println("[ERROR: non matching regular expression at "+ wordSense+"]");
 			System.exit(0);
 			return null;
 		}			

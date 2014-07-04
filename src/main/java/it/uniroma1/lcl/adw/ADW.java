@@ -190,6 +190,16 @@ public class ADW
 					
 					break;
 					
+				case WORD_SENSE:
+					for(String wordSense : Arrays.asList(text.split(" ")))
+					{
+						IWord sense = WordNetUtils.mapWordSenseToIWord(wordnetVersion, wordSense);
+						String offset = GeneralUtils.fixOffset(sense.getSynset().getOffset(), sense.getPOS());
+						cookedSentence.add(offset);
+					}
+					
+					break;
+					
 				case SURFACE:
 					out = TS.cookSentence(text, discardStopwords);
 					cookedSentence = out.getFirst();	
@@ -320,7 +330,9 @@ public class ADW
 			List<List<SemSig>> secondVectors = new ArrayList<List<SemSig>>();
 			Set<SemSig> secondVectorSet = new HashSet<SemSig>();
 					
-			if(trgTextType.equals(LexicalItemType.SENSE_OFFSETS) || trgTextType.equals(LexicalItemType.SENSE_KEYS))
+			if(trgTextType.equals(LexicalItemType.SENSE_OFFSETS) 
+					|| trgTextType.equals(LexicalItemType.SENSE_KEYS)
+					|| trgTextType.equals(LexicalItemType.WORD_SENSE))
 			{
 				secondVectorSet = new HashSet<SemSig>(TS.getSenseVectorsFromOffsetSentence(cookedSentence2, lkb));
 				
@@ -401,15 +413,15 @@ public class ADW
 		ADW pipeLine = new ADW();
 
 //		this has a problem , it should be 1.0
-		String text1 = "windmill is very powerfull";	
-		String text2 = "this is a test";
+		String text1 = "windmill";	
+		String text2 = "windmill.n.1";
 
 		//if disambiguation by pair-specific alignment is intended
 		DisambiguationMethod disMethod = DisambiguationMethod.MIRROR;		
 		
 		SimilarityMeasure measure = SimilarityMeasure.WEIGHTED_OVERLAP;	//measure for comparing resulting vectors
 		LexicalItemType srcTextType = LexicalItemType.SURFACE;	//0: text pair, 1:pos-tagged lemmas pair, 2: sense pair
-		LexicalItemType trgTextType = LexicalItemType.SURFACE;
+		LexicalItemType trgTextType = LexicalItemType.WORD_SENSE;
 		
 		double score = pipeLine.getFastSimilarity(
 				text1, text2,
