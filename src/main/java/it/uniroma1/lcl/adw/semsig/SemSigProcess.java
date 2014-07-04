@@ -7,6 +7,7 @@ import it.uniroma1.lcl.adw.utils.GeneralUtils;
 import it.uniroma1.lcl.adw.utils.SemSigUtils;
 import it.uniroma1.lcl.adw.utils.WordNetUtils;
 import it.uniroma1.lcl.jlt.util.Files;
+import it.uniroma1.lcl.jlt.wordnet.WordNet;
 import it.uniroma1.lcl.jlt.wordnet.WordNetVersion;
 
 import java.io.BufferedReader;
@@ -191,7 +192,19 @@ public class SemSigProcess
 					allSemSigs.add(getSemSigFromOffset(offset, LKB.WordNetGloss, 0, true));
 				
 				break;
-			
+				
+			case WORD_SENSE:
+				for(String offset : wordPosList)
+					allSemSigs.add(getSemSigFromOffset(offset, LKB.WordNetGloss, 0, true));
+				
+				break;
+				
+			case SENSE_KEYS:
+				for(String offset : wordPosList)
+					allSemSigs.add(getSemSigFromOffset(offset, LKB.WordNetGloss, 0, true));
+				
+				break;
+				
 			case SURFACE_TAGGED:
 				for(String wordPos : wordPosList)
 					allSemSigs.addAll(getWordPosSemSigs(wordPos, LKB.WordNetGloss, 0, true));
@@ -204,9 +217,6 @@ public class SemSigProcess
 				
 				break;
 				
-			case SENSE_KEYS:
-				//TODO: has to be done
-			
 		}
 		
 		

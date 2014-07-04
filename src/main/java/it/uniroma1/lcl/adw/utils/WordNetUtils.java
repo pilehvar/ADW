@@ -1,6 +1,5 @@
 package it.uniroma1.lcl.adw.utils;
 
-import it.uniroma1.lcl.jlt.util.Pair;
 import it.uniroma1.lcl.jlt.wordnet.WordNet;
 import it.uniroma1.lcl.jlt.wordnet.WordNetVersion;
 import it.uniroma1.lcl.jlt.wordnet.data.WordNetExtendedMappings;
@@ -15,7 +14,8 @@ import edu.mit.jwi.item.POS;
 
 public class WordNetUtils
 {
-	static final Pattern readableFormat = Pattern.compile("([^ ]*)\\.([anvr])\\.(\\d+)");
+	static final Pattern wordSenseFormat = Pattern.compile("([^ ]*)\\.([anvr])\\.(\\d+)");
+	static WordNetVersion wnv = WordNetVersion.WN_30;
 	
 	public static String mapIWordToReadableForm(WordNetVersion wnv, IWord word)
 	{
@@ -64,7 +64,7 @@ public class WordNetUtils
 	
 	public static IWord mapWordSenseToIWord(WordNetVersion wnv, String wordSense)
 	{
-		Matcher m = readableFormat.matcher(wordSense);
+		Matcher m = wordSenseFormat.matcher(wordSense);
 		
 		if(m.find())
 		{
@@ -134,6 +134,18 @@ public class WordNetUtils
 			foff += "-"+tag.getTag();
 		
 		return foff;
+	}
+	
+	public static String getOffsetFromIWord(String senseKey)
+	{
+		IWord sense = WordNet.getInstance().getSenseFromSenseKey(senseKey);
+		return fixOffset(sense.getSynset().getOffset(), sense.getPOS());
+	}
+	
+	public static String getOffsetFromWordSense(String wordSense)
+	{
+		IWord sense = mapWordSenseToIWord(wnv, wordSense);
+		return fixOffset(sense.getSynset().getOffset(), sense.getPOS());
 	}
 	
 	public static void main(String args[])

@@ -8,5 +8,5 @@ package it.uniroma1.lcl.adw;
 public enum DisambiguationMethod 
 {
 	NONE,
-	MIRROR;
+	ALIGNMENT_BASED;
 }

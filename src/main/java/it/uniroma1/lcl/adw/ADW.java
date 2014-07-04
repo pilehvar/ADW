@@ -43,7 +43,7 @@ public class ADW
 	int generatedVectorSize;
 	String STSWorkingDirectory;
 	int testedVectorSize;
-	WordNetVersion wordnetVersion;
+	public static final WordNetVersion wordnetVersion = WordNetVersion.WN_30;
 	
 	Set<String> WordNetWords = null; 
 	
@@ -55,8 +55,6 @@ public class ADW
 		alignmentVecSize = ADWConfiguration.getInstance().getAlignmentVectorSize();
 		//the size of the semantic signatures used during the main comparison
 		testedVectorSize = ADWConfiguration.getInstance().getTestVectorSize();
-		
-		wordnetVersion = WordNetVersion.WN_30;
 	}
 	
 	/**
@@ -77,7 +75,7 @@ public class ADW
 		}
 	}
 	
-	public double getFastSimilarity(
+	public double getPairSimilarity(
 			String text1, String text2, 
 			DisambiguationMethod disMethod,
 			SimilarityMeasure measure,
@@ -127,7 +125,7 @@ public class ADW
 				
 				//alignment-based disambiguation
 				//should disambiguate the two texts and return the disambiguated SemSigs				
-			case MIRROR:
+			case ALIGNMENT_BASED:
 				Pair<List<SemSig>,List<SemSig>>	disambiguatedPair =
 						DisambiguateCookedSentence(cookedSentence1, cookedSentence2, 
 						srcTextType, trgTextType, LKB.WordNetGloss, alignmentMeasure, alignmentVecSize, 
@@ -313,9 +311,11 @@ public class ADW
 			List<List<SemSig>> firstVectors = new ArrayList<List<SemSig>>();
 			Set<SemSig> firstVectorSet = new HashSet<SemSig>();
 			
-			if(srcTextType.equals(LexicalItemType.SENSE_OFFSETS) || srcTextType.equals(LexicalItemType.SENSE_KEYS))
+			if(srcTextType.equals(LexicalItemType.SENSE_OFFSETS) 
+					|| srcTextType.equals(LexicalItemType.SENSE_KEYS)
+					|| srcTextType.equals(LexicalItemType.WORD_SENSE))
 			{
-				firstVectorSet = new HashSet<SemSig>(TS.getSenseVectorsFromOffsetSentence(cookedSentence1, lkb));
+				firstVectorSet = new HashSet<SemSig>(TS.getSenseVectorsFromOffsetSentence(cookedSentence1, srcTextType, lkb));
 			
 				for(SemSig s : firstVectorSet)
 					firstVectors.add(Arrays.asList(s));				
@@ -334,7 +334,7 @@ public class ADW
 					|| trgTextType.equals(LexicalItemType.SENSE_KEYS)
 					|| trgTextType.equals(LexicalItemType.WORD_SENSE))
 			{
-				secondVectorSet = new HashSet<SemSig>(TS.getSenseVectorsFromOffsetSentence(cookedSentence2, lkb));
+				secondVectorSet = new HashSet<SemSig>(TS.getSenseVectorsFromOffsetSentence(cookedSentence2, trgTextType, lkb));
 				
 				for(SemSig s : secondVectorSet)
 					secondVectors.add(Arrays.asList(s));				
@@ -358,8 +358,9 @@ public class ADW
 			alignmentsRev = TextualSimilarity.semanticAlignerBySense(secondVectors, firstVectorSet, alignmentMeasure, alignmentVecSize, toBeTakens); 
 
 			//To avoid non-identical disambiguation pairs in case of word pairs that share multiple sysnsets
-			//TODO
 			//need to check if two synsets align with 1.0 score, they should be taken with priority
+			//TODO
+
 			
 			List<SemSig> srcSigs = new ArrayList<SemSig>();
 			List<SemSig> trgSigs = new ArrayList<SemSig>();
@@ -406,31 +407,70 @@ public class ADW
 		return vectors;
 	}
 	
-	//TODO: automatic detection of text types
 	
+	public static void demo()
+	{
+        ADW pipeLine = new ADW();
+
+        String text1 = "a mill that is powered by the wind";
+        LexicalItemType text1Type = LexicalItemType.SURFACE;
+        
+        String text2 = "windmill#n rotate#v wind#n";
+        LexicalItemType text2Type = LexicalItemType.SURFACE_TAGGED;
+        
+        String text3 = "windmill.n.1";
+        LexicalItemType text3Type = LexicalItemType.WORD_SENSE;
+        
+        String text4 = "windmill%1:06:01::";
+        LexicalItemType text4Type = LexicalItemType.SENSE_KEYS;
+        
+        //if lexical items has to be disambiguated
+        DisambiguationMethod disMethod = DisambiguationMethod.ALIGNMENT_BASED;
+        
+        //measure for comparing semantic signatures
+        SimilarityMeasure measure = SimilarityMeasure.WEIGHTED_OVERLAP; 
+
+        double score1 = pipeLine.getPairSimilarity(
+                text1, text2,
+                disMethod, 
+                measure,
+                text1Type, text2Type);
+        System.out.println(score1+"\t"+text1+"\t"+text2);
+        
+        double score2 = pipeLine.getPairSimilarity(
+                text1, text3,
+                disMethod, 
+                measure,
+                text1Type, text3Type);
+        System.out.println(score2+"\t"+text1+"\t"+text3);
+        
+        double score3 = pipeLine.getPairSimilarity(
+                text1, text4,
+                disMethod, 
+                measure,
+                text1Type, text4Type);
+        System.out.println(score3+"\t"+text1+"\t"+text4);
+        
+        double score4 = pipeLine.getPairSimilarity(
+                text2, text3,
+                disMethod, 
+                measure,
+                text2Type, text3Type);
+        System.out.println(score4+"\t"+text2+"\t"+text3);
+        
+        double score5 = pipeLine.getPairSimilarity(
+                text3, text4,
+                disMethod, 
+                measure,
+                text3Type, text4Type);
+        System.out.println(score5+"\t"+text3+"\t"+text4);
+
+	}
+	
+	//TODO: automatic detection of text types
 	public static void main(String args[])
 	{
-		ADW pipeLine = new ADW();
-
-//		this has a problem , it should be 1.0
-		String text1 = "windmill";	
-		String text2 = "windmill.n.1";
-
-		//if disambiguation by pair-specific alignment is intended
-		DisambiguationMethod disMethod = DisambiguationMethod.MIRROR;		
-		
-		SimilarityMeasure measure = SimilarityMeasure.WEIGHTED_OVERLAP;	//measure for comparing resulting vectors
-		LexicalItemType srcTextType = LexicalItemType.SURFACE;	//0: text pair, 1:pos-tagged lemmas pair, 2: sense pair
-		LexicalItemType trgTextType = LexicalItemType.WORD_SENSE;
-		
-		double score = pipeLine.getFastSimilarity(
-				text1, text2,
-				disMethod, 
-				measure,
-				srcTextType, trgTextType); 
-		
-		System.out.println(score);
-		
+		demo();
 	}
 
 

@@ -1,11 +1,14 @@
 package it.uniroma1.lcl.adw.textual.similarity;
 
+import it.uniroma1.lcl.adw.ADWConfiguration;
+import it.uniroma1.lcl.adw.LexicalItemType;
 import it.uniroma1.lcl.adw.SimilarityMeasure;
 import it.uniroma1.lcl.adw.semsig.LKB;
 import it.uniroma1.lcl.adw.semsig.SemSig;
 import it.uniroma1.lcl.adw.semsig.SemSigComparator;
 import it.uniroma1.lcl.adw.semsig.SemSigProcess;
 import it.uniroma1.lcl.adw.utils.GeneralUtils;
+import it.uniroma1.lcl.adw.utils.WordNetUtils;
 import it.uniroma1.lcl.jlt.pipeline.stanford.DataProcessor;
 import it.uniroma1.lcl.jlt.pipeline.stanford.StanfordSentence;
 import it.uniroma1.lcl.jlt.pipeline.stanford.StanfordSentence.CompoundingParameter;
@@ -16,6 +19,7 @@ import it.uniroma1.lcl.jlt.util.Pair;
 import it.uniroma1.lcl.jlt.util.Stopwords;
 import it.uniroma1.lcl.jlt.util.Strings;
 import it.uniroma1.lcl.jlt.wordnet.WordNet;
+import it.uniroma1.lcl.jlt.wordnet.WordNetVersion;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -30,6 +34,7 @@ import org.apache.commons.collections15.multimap.MultiHashMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import edu.mit.jwi.item.ISynset;
 import edu.mit.jwi.item.IWord;
 import edu.mit.jwi.item.POS;
 import edu.stanford.nlp.ling.WordLemmaTag;
@@ -44,7 +49,7 @@ public class TextualSimilarity
 	private static final Log log = LogFactory.getLog(TextualSimilarity.class);
 	
 	static private TextualSimilarity instance;
-	
+	WordNetVersion wnv;
 	
 	List<Character> TAGS = Arrays.asList(new Character[]{'V','R','J','N'});
 	
@@ -56,6 +61,8 @@ public class TextualSimilarity
 	
 	public TextualSimilarity()
 	{
+		wnv = WordNetVersion.WN_30;
+		
 		for(String tag : Arrays.asList("n","v","r","a"))
 			allWordNetEntries.putAll(tag, WordNet.getInstance().getAllWords(GeneralUtils.getTagfromTag(tag)));	
 	
@@ -385,10 +392,10 @@ public class TextualSimilarity
 	}
 	
 	
-	public List<SemSig> getSenseVectorsFromOffsetSentence(List<String> offsets, LKB lkb)
+	public List<SemSig> getSenseVectorsFromOffsetSentence(List<String> offsets, LexicalItemType type, LKB lkb)
 	{
 		List<SemSig> vectors = new ArrayList<SemSig>();
-		
+
 		for(String offset : offsets)
 		{
 			SemSig v = SemSigProcess.getInstance().getSemSigFromOffset(offset, lkb, 0);
