@@ -402,7 +402,7 @@ public class ADW
 
 //		this has a problem , it should be 1.0
 		String text1 = "windmill is very powerfull";	
-		String text2 = "not";
+		String text2 = "this is a test";
 
 		//if disambiguation by pair-specific alignment is intended
 		DisambiguationMethod disMethod = DisambiguationMethod.MIRROR;		
