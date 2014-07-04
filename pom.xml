@@ -43,18 +43,15 @@
 			<version>2.0.0</version>
 			<systemPath>${basedir}/lib/jlt-2.0.0.jar</systemPath>
 		</dependency>
-
+		
 		<dependency>
-			<groupId>edu.stanford.nlp</groupId>
-			<artifactId>corenlp</artifactId>
-			<version>1.2.0.20110916</version>
+			<groupId>in-project</groupId>
+			<artifactId>stanford-postagger</artifactId>
+			<scope>system</scope>
+			<version>2011-05-18</version>
+			<systemPath>${basedir}/lib/stanford-postagger-2011-05-18.jar</systemPath>
 		</dependency>
-	</dependencies>
 	
+	</dependencies>
 </project>
 
-<repository>
-    <id>in-project</id>
-    <name>JLT</name>
-    <url>/home/pilehvar/workspace/ADWMaven/lib/</url>
-</repository>

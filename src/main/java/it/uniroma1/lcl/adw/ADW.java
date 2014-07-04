@@ -2,8 +2,8 @@ package it.uniroma1.lcl.adw;
 
 import it.uniroma1.lcl.adw.semsig.LKB;
 import it.uniroma1.lcl.adw.semsig.SemSig;
+import it.uniroma1.lcl.adw.semsig.SemSigComparator;
 import it.uniroma1.lcl.adw.semsig.SemSigProcess;
-import it.uniroma1.lcl.adw.semsig.comparison.SemSigComparator;
 import it.uniroma1.lcl.adw.textual.similarity.TextualSimilarity;
 import it.uniroma1.lcl.adw.utils.GeneralUtils;
 import it.uniroma1.lcl.adw.utils.SemSigUtils;
@@ -149,11 +149,13 @@ public class ADW
 	
 	public Pair<List<String>,List<String>> mirrorPosTags(List<String> firstCookedSentence, List<String> secondCookedSentence) 
 	{
+		/*
 		if(secondCookedSentence.size() == 0)
 		{
 			System.out.println("[ERROR: Set mirror pos tagging off!]");
 			System.exit(0);
 		}
+		*/
 		
 		return TextualSimilarity.fixPOSmirroring(firstCookedSentence, secondCookedSentence);
 	}
@@ -238,6 +240,9 @@ public class ADW
 	
 	public boolean checkType(String input, LexicalItemType type)
 	{
+		if(input.trim().length() == 0)
+			return false;
+		
 		for(String s : input.split(" "))
 		{
 			switch(type)
@@ -248,7 +253,7 @@ public class ADW
 					break;
 					
 				case SURFACE:
-					if(s.length() == 0)
+					if(s.trim().length() == 0)
 						return false;
 					break;
 					
@@ -396,15 +401,15 @@ public class ADW
 		ADW pipeLine = new ADW();
 
 //		this has a problem , it should be 1.0
-		String text1 = "mound#n";	
-		String text2 = "stove#n";
+		String text1 = "windmill is very powerfull";	
+		String text2 = "not";
 
 		//if disambiguation by pair-specific alignment is intended
 		DisambiguationMethod disMethod = DisambiguationMethod.MIRROR;		
 		
 		SimilarityMeasure measure = SimilarityMeasure.WEIGHTED_OVERLAP;	//measure for comparing resulting vectors
-		LexicalItemType srcTextType = LexicalItemType.SURFACE_TAGGED;	//0: text pair, 1:pos-tagged lemmas pair, 2: sense pair
-		LexicalItemType trgTextType = LexicalItemType.SURFACE_TAGGED;
+		LexicalItemType srcTextType = LexicalItemType.SURFACE;	//0: text pair, 1:pos-tagged lemmas pair, 2: sense pair
+		LexicalItemType trgTextType = LexicalItemType.SURFACE;
 		
 		double score = pipeLine.getFastSimilarity(
 				text1, text2,
