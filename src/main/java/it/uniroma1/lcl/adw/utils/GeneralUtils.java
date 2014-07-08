@@ -318,13 +318,5 @@ public class GeneralUtils
 		return map;
 	}
 
-	public static void main(String args[])
-	{
-		
-		//System.out.println(getSynsetWordsOnly(WordNet.getInstance().getSynsetFromOffset("09917593-n")));
-		//System.out.println(getOffsetFromPath("/media/backup/fromSDA/ppvs.all.classified/02/47/29/87/02472987-n.ppv"));
-		
-	}
-	
 }
 

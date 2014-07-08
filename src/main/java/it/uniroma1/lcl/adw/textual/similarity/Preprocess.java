@@ -447,29 +447,11 @@ public class Preprocess
 	public static void main(String args[])
 	{
 		
-		//System.out.println(removeHyphens("A man is holding up and talking about a gray You Tube T-shirt"));
+		System.out.println(removeHyphens("A man is holding up and talking about a gray You Tube T-shirt"));
 			
 		TextualSimilarity TS = new TextualSimilarity();
 		
 		System.out.println(TS.cookSentence("an approximated amount of something", true));
-		System.exit(0);
-		
-//		boolean training = false;
-//		boolean processed = false;
-//		List<Pair<String,String>> pairs =  TS.getSentencePairs(PairSource.headlines13, training, processed);
-		//PHASE [1]
-		//pipeline(pairs, "/home/pilehvar/data/Semeval2012/TextualSimilarity/test-gold/STS13.input.headlines.processed.txt");
-		
-		//System.exit(0);
-		
-		//2.1 fix all
-		//TODO: a better spell checking can improve many cases: motorcyle, tomatoe, potatoe...
-		//2.2 spell correct only if they have the correct form on the other side (does not fix tomatoe, potatoe,...)
-//		processed = true;
-//		pairs =  TS.getSentencePairs(PairSource.headlines13, training, processed);
-		
-		//PHASE [2] spell checking
-		//manualCheck(pairs, true,"/home/pilehvar/data/Semeval2012/TextualSimilarity/test-gold/STS13.input.headlines.processed.txt");
 		
 	}
 }

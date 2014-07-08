@@ -604,21 +604,11 @@ public class TextualSimilarity
 	{
 		TextualSimilarity TS = new TextualSimilarity();
 		
-		//TS.runDirectComparison();
-		
-//		System.out.println(TS.getStanfordSentence(
-//				"Slovakia has not been condemned to the second division and it is logical that it should like to join together with the Czech Republic."
-//				, true).getFirst());
+		System.out.println(TS.getStanfordSentence(
+				"Slovakia has not been condemned to the second division and it is logical that it should like to join together with the Czech Republic."
+				, true).getFirst());
 				
 		System.out.println(TS.cookSentence("Slovakia has not been condemned to the second division and it is logical that it should like to join together with the Czech Republic.", true));
-		
-//		System.out.println(TS.revisedCookSentence("A person who takes on a motor vehicle such as a car or a bus bmw.", 
-//				true, true, true, null, true, true));
-		//TS.runDatasetGenerator();
-		//TS.runDirectComparison();
-		
-		
-//		System.out.println(TS.fixPOSmirroring(Arrays.asList("15215844-n mouse#v jumped#v over#r table#n".split(" ")), Arrays.asList("mouse#n jumped#v over#r table#n".split(" "))));	
 		
 	}
 	

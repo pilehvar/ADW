@@ -150,29 +150,7 @@ public class WordNetUtils
 	
 	public static void main(String args[])
 	{
-		//System.out.println(mapOffsetsToReadableForm(WordNetVersion.WN_30, Arrays.asList("05563770-n","02737660-n"), "arm", POS.NOUN));
-		//System.out.println(mapOffsetToReadableForm(WordNetVersion.WN_30, "09044862-n", "United states of America", POS.NOUN));
-		
-		/*
-		for (int i = 0; i < 2; i++) {
-			IWord iword = WordNet.getInstance(WordNetVersion.WN_171).getSenses("mouse", POS.NOUN).get(i); 
-			System.out.println(mapIWordToReadableForm(WordNetVersion.WN_171, iword));
-				
-		}*/
-		
-		//System.out.println(mapReadableForm(WordNetVersion.WN_171, WordNetVersion.WN_30,"bar.12",POS.NOUN));
-		
-		//IWord word = mapReadableToIWord(WordNetVersion.WN_171,"u.s..2", POS.NOUN);
-		//System.out.println(mapIWordToReadableForm(WordNetVersion.WN_171, word));
-		
-		//System.out.println(mapReadableForm(WordNetVersion.WN_171,WordNetVersion.WN_30,"arm.4",POS.NOUN));
-		
-//		System.out.println(WordNetUtils.mapReadableToIWord(WordNetVersion.WN_30,"mouse.1",POS.NOUN));
-//		System.out.println(WordNet.getInstance(WordNetVersion.WN_171).getSenses("levee", POS.NOUN));
-		
 		System.out.println(WordNetUtils.mapWordSenseToIWord(WordNetVersion.WN_30, "mouse.n.4"));
-		
-//		System.out.println(mapReadableForm(WordNetVersion.WN_171,WordNetVersion.WN_30,"levee.1",POS.NOUN));
 		
 	}
 }

@@ -93,12 +93,6 @@ public class SemSigProcess
 			if (warnings)
 				log.info("[WARNING: "+path+ " does not exist]");
 			
-			//generate the vector
-			//move it to the path
-			//compress it
-			//if still non existing, return
-			//otherwise read it
-
 			return vector;
 		}
 		
@@ -282,7 +276,6 @@ public class SemSigProcess
 	public SemSig getSemSigFromOffset(String offset, LKB lkb, int size, boolean warnings)
 	{
 		String basePath = ADWConfiguration.getInstance().getPPVPath(lkb);
-		//return getCustomVectorFrom(basePath+getSubdirectory(offset)+offset+".ppv",true);
 		
 		return getCustomSemSigFromCompressed(basePath+getSubdirectory(offset)+offset+".ppv", size, warnings);
 	}
@@ -325,66 +318,11 @@ public class SemSigProcess
 	
 	public static void main(String args[])
 	{
-		//List<Vector> vs = getWordVectors("mouse", POS.NOUN, LKB.WordNet);
-		
-		//System.out.println(getNighboursHashMap(LKB.WordNet, "02958343-n", 15).size());
-		
-		/*
-		SemSig w1 = Vectoring.getAveragedWordVector("browser", POS.NOUN, LKB.WordNetGloss, 0, true, null);
-		SemSig w2 = Vectoring.getVectorFromOffset("06571301-n", LKB.WordNetGloss, 0);
-		
-		System.out.println(w1.getVector().get("03580615-n"));
-		System.out.println(w2.getVector().get("03580615-n"));
-		
-		System.out.println(VectorComparator.compare(w1, w2, SimilarityMeasure.COSINE, 0));
-		
-		System.exit(0);
-		*/
-		
-		//HashMap<String,Double> map = getGraphFuzzyHashMap(LKB.WordNet, "02958343-n");
-		
-		//Vector v1 = getGraphFuzzyVector(LKB.WordNet, "07777945-n", 4);
-		//Vector v2 = getGraphFuzzyVector(LKB.WordNet, "07777512-n", 4);
-		
-		//SemSig v1 = getVectorFromOffset("07777945-n", LKB.WordNet, 1000);
-		//SemSig v2 = getVectorFromOffset("07777512-n", LKB.WordNet, 1000);
-		
-//		SemSig v1 = Vectoring.getInstance().getCustomVectorFromCompressed("/media/backup/fromSDA/ppvs.30g.full.classified/08/08/97/97/0808997-n.ppv", 10);
-//		SemSig v2 = Vectoring.getInstance().getCustomVectorFromCompressed("/media/backup/fromSDA/ppvs.30g.full.classified/08/08/97/97/08089797-n.ppv", 50, false);
-		
-//		List<SemSig> v1s = SemSigProcess.getInstance().getWordPosSemSigs("tornado#n", LKB.WordNetGloss, 0, true);
-//		List<SemSig> v2s = SemSigProcess.getInstance().getWordPosSemSigs("twister#n", LKB.WordNetGloss, 0, true);
-		
-//		SemSig v1 = SemSigUtils.averageSemSigs(v1s);
-//		SemSig v2 = SemSigUtils.averageSemSigs(v2s);
-		
 		SemSig v1 = SemSigProcess.getInstance().getSemSigFromWordSense("gem.n.3", LKB.WordNetGloss, 0);
 		SemSig v2 = SemSigProcess.getInstance().getSemSigFromWordSense("jewel.n.2", LKB.WordNetGloss, 0);
 
 		
 		double sim = SemSigComparator.compare(v1, v2, new WeightedOverlap(), 0);
 		System.out.println(sim);
-		
-		/*
-		double sum1 = 0;
-		double sum2 = 0;
-
-		System.out.println(v1.getVector().size()+"\t"+v2.getVector().size());
-		
-		for(String s : v1.getVector().keySet())
-		{
-			//System.out.println(s+"\t"+v1.getVector().get(s)+"\t"+v2.getVector().get(s));
-			
-			sum1 += v1.getVector().get(s);
-			//sum2 += v2.getVector().get(s);
-		}
-		
-		System.out.println(sum1+"\t"+sum2);
-		
-		System.out.println(sim);
-		*/
-		
-		//log.info(vs.size());
-		//log.info(vs.get(0).getSortedVector());
 	}
 }
