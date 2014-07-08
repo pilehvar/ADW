@@ -1,5 +1,7 @@
 package it.uniroma1.lcl.adw;
 
+import it.uniroma1.lcl.adw.comparison.SignatureComparison;
+import it.uniroma1.lcl.adw.comparison.WeightedOverlap;
 import it.uniroma1.lcl.adw.semsig.LKB;
 import it.uniroma1.lcl.adw.semsig.SemSig;
 import it.uniroma1.lcl.adw.semsig.SemSigComparator;
@@ -12,6 +14,7 @@ import it.uniroma1.lcl.jlt.util.Pair;
 import it.uniroma1.lcl.jlt.wordnet.WordNet;
 import it.uniroma1.lcl.jlt.wordnet.WordNetVersion;
 
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -38,7 +41,7 @@ public class ADW
 	static private ADW instance;
 	TextualSimilarity TS = TextualSimilarity.getInstance();
 	
-	SimilarityMeasure alignmentMeasure;
+	SignatureComparison alignmentMeasure;
 	int alignmentVecSize;
 	int generatedVectorSize;
 	String STSWorkingDirectory;
@@ -50,7 +53,21 @@ public class ADW
 	private ADW()
 	{
 		//the signature comparison measure used during similarity-based disambiguation
-		alignmentMeasure =  ADWConfiguration.getInstance().getAlignmentSimilarityMeasure();
+	     try
+	        {
+	            String p = "it.uniroma1.lcl.adw.comparison."
+	            			+ ADWConfiguration.getInstance().getAlignmentSimilarityMeasure();
+	            
+				@SuppressWarnings("unchecked")
+				Constructor<SignatureComparison> ct = 
+	            		(Constructor<SignatureComparison>) Class.forName(p).getConstructor(new Class[] {});
+	            alignmentMeasure = ct.newInstance();
+	        }
+	        catch(Exception e)
+	        {
+	            e.printStackTrace();
+	        }
+	     
 		//the size of the semantic signatures used during similarity-based disambiguation
 		alignmentVecSize = ADWConfiguration.getInstance().getAlignmentVectorSize();
 		//the size of the semantic signatures used during the main comparison
@@ -78,7 +95,7 @@ public class ADW
 	public double getPairSimilarity(
 			String text1, String text2, 
 			DisambiguationMethod disMethod,
-			SimilarityMeasure measure,
+			SignatureComparison measure,
 			LexicalItemType srcTextType,
 			LexicalItemType trgTextType)
 	{
@@ -296,7 +313,7 @@ public class ADW
 			LexicalItemType srcTextType,
 			LexicalItemType trgTextType,
 			LKB lkb, 
-			SimilarityMeasure measure, 
+			SignatureComparison measure, 
 			int vectorSize, 
 			boolean restrictedByPOS, 
 			boolean verbose)
@@ -428,7 +445,7 @@ public class ADW
         DisambiguationMethod disMethod = DisambiguationMethod.ALIGNMENT_BASED;
         
         //measure for comparing semantic signatures
-        SimilarityMeasure measure = SimilarityMeasure.WEIGHTED_OVERLAP; 
+        SignatureComparison measure = new WeightedOverlap(); 
 
         double score1 = pipeLine.getPairSimilarity(
                 text1, text2,

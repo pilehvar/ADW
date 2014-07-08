@@ -1,13 +1,12 @@
 package it.uniroma1.lcl.adw.semsig;
 
 import it.uniroma1.lcl.adw.ADWConfiguration;
-import it.uniroma1.lcl.adw.SimilarityMeasure;
 import it.uniroma1.lcl.adw.LexicalItemType;
+import it.uniroma1.lcl.adw.comparison.WeightedOverlap;
 import it.uniroma1.lcl.adw.utils.GeneralUtils;
 import it.uniroma1.lcl.adw.utils.SemSigUtils;
 import it.uniroma1.lcl.adw.utils.WordNetUtils;
 import it.uniroma1.lcl.jlt.util.Files;
-import it.uniroma1.lcl.jlt.wordnet.WordNet;
 import it.uniroma1.lcl.jlt.wordnet.WordNetVersion;
 
 import java.io.BufferedReader;
@@ -363,7 +362,7 @@ public class SemSigProcess
 		SemSig v2 = SemSigProcess.getInstance().getSemSigFromWordSense("jewel.n.2", LKB.WordNetGloss, 0);
 
 		
-		double sim = SemSigComparator.compare(v1, v2, SimilarityMeasure.WEIGHTED_OVERLAP, 0);
+		double sim = SemSigComparator.compare(v1, v2, new WeightedOverlap(), 0);
 		System.out.println(sim);
 		
 		/*

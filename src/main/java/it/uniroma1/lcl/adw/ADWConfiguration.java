@@ -256,16 +256,11 @@ public class ADWConfiguration
 		return config.getInt("alignmentVecSize");
 	}
 
-	public SimilarityMeasure getAlignmentSimilarityMeasure() 
+	public String getAlignmentSimilarityMeasure() 
 	{
-		return getEnumFromString(SimilarityMeasure.class,config.getString("alignmentSimMeasure"));
+		return config.getString("alignmentSimMeasure");
 	}
 
-	public SimilarityMeasure getComparisonSimilarityMeasure() 
-	{
-		return getEnumFromString(SimilarityMeasure.class,config.getString("comparisonMeasure"));
-	}
-	
 	
 	public static <T extends Enum<T>> T getEnumFromString(Class<T> c, String string)
 	{

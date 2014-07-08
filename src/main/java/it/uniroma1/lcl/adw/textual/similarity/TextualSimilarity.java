@@ -1,14 +1,12 @@
 package it.uniroma1.lcl.adw.textual.similarity;
 
-import it.uniroma1.lcl.adw.ADWConfiguration;
 import it.uniroma1.lcl.adw.LexicalItemType;
-import it.uniroma1.lcl.adw.SimilarityMeasure;
+import it.uniroma1.lcl.adw.comparison.SignatureComparison;
 import it.uniroma1.lcl.adw.semsig.LKB;
 import it.uniroma1.lcl.adw.semsig.SemSig;
 import it.uniroma1.lcl.adw.semsig.SemSigComparator;
 import it.uniroma1.lcl.adw.semsig.SemSigProcess;
 import it.uniroma1.lcl.adw.utils.GeneralUtils;
-import it.uniroma1.lcl.adw.utils.WordNetUtils;
 import it.uniroma1.lcl.jlt.pipeline.stanford.DataProcessor;
 import it.uniroma1.lcl.jlt.pipeline.stanford.StanfordSentence;
 import it.uniroma1.lcl.jlt.pipeline.stanford.StanfordSentence.CompoundingParameter;
@@ -34,7 +32,6 @@ import org.apache.commons.collections15.multimap.MultiHashMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import edu.mit.jwi.item.ISynset;
 import edu.mit.jwi.item.IWord;
 import edu.mit.jwi.item.POS;
 import edu.stanford.nlp.ling.WordLemmaTag;
@@ -502,7 +499,7 @@ public class TextualSimilarity
 	public static LinkedHashMap<Pair<SemSig,SemSig>,Double> semanticAlignerBySense(
 			List<List<SemSig>> firstSenses, 
 			Set<SemSig> secondSenses, 
-			SimilarityMeasure measure, 
+			SignatureComparison measure, 
 			int vectorSize,
 			Set<SemSig> toBeTakens)
 	{

@@ -1,10 +1,11 @@
 package it.uniroma1.lcl.adw.semsig;
 
-import it.uniroma1.lcl.adw.SimilarityMeasure;
+import it.uniroma1.lcl.adw.comparison.KLDivergence;
+import it.uniroma1.lcl.adw.comparison.SignatureComparison;
+import it.uniroma1.lcl.adw.comparison.WeightedOverlap;
 import it.uniroma1.lcl.adw.utils.GeneralUtils;
 import it.uniroma1.lcl.adw.utils.SemSigUtils;
 import it.uniroma1.lcl.jlt.util.IntegerCounter;
-import it.uniroma1.lcl.jlt.util.Maths;
 import it.uniroma1.lcl.jlt.wordnet.WordNet;
 
 import java.util.ArrayList;
@@ -21,7 +22,7 @@ import edu.mit.jwi.item.POS;
 
 public class SemSigComparator
 {
-	public static Double compare(SemSig v1, SemSig v2, SimilarityMeasure measure, int size, double oovScore)
+	public static Double compare(SemSig v1, SemSig v2, SignatureComparison measure, int size, double oovScore)
 	{
 		if(v1 == null || v2 == null)
 			return oovScore;
@@ -29,7 +30,11 @@ public class SemSigComparator
 		return compareSortedNormalizedMaps(v1.getVector(), v2.getVector(), measure, size);
 	}
 	
-	public static Double compare(SemSig v1, SemSig v2, SimilarityMeasure measure, int size)
+	public static Double compare(
+			SemSig v1, 
+			SemSig v2, 
+			SignatureComparison measure, 
+			int size)
 	{
 		if(v1 == null || v2 == null)
 			return 0.0;
@@ -37,13 +42,20 @@ public class SemSigComparator
 		return compareSortedNormalizedMaps(v1.getVector(), v2.getVector(), measure, size);
 	}
 	
-	public static Double compareSortedNormalizedMaps(LinkedHashMap<Integer,Float> vec1, LinkedHashMap<Integer,Float> vec2, SimilarityMeasure measure, int size)
+	public static Double compareSortedNormalizedMaps(
+			LinkedHashMap<Integer,Float> vec1, 
+			LinkedHashMap<Integer,Float> vec2, 
+			SignatureComparison measure, 
+			int size)
 	{
 		return compare(vec1, vec2, measure, size, true);
 	}
 	
-	public static Double compare(LinkedHashMap<Integer,Float> vec1, LinkedHashMap<Integer,Float> vec2, 
-			SimilarityMeasure measure, int size, boolean sortedNormalized)
+	public static Double compare(
+			LinkedHashMap<Integer,Float> vec1, 
+			LinkedHashMap<Integer,Float> vec2, 
+			SignatureComparison measure, int size, 
+			boolean sortedNormalized)
 	{
 		int newSize = size;
 		
@@ -66,89 +78,10 @@ public class SemSigComparator
 		
 		size = newSize;
 		
-		switch(measure)
-		{
-			case COSINE:
-				return Maths.cosineSimilarity(vec1, vec2);
-				
-			case WEIGHTED_OVERLAP:
-				return getNumberOfOverlaps(vec1, vec2, true);
-				
-			case OVERLAP:
-				return getNumberOfOverlaps(vec1, vec2, false);
-				
-			case KL_DIVERGENCE:
-				return calculateKLDiv(vec1, vec2);
-				
-			case JENSEN_SHANNON:
-				return calculateJS(vec1, vec2);
-				
-		}
+		return measure.compare(vec1, vec2);
 		
-		return null;
-	}
-	
-	private static Double calculateKLDiv(LinkedHashMap<Integer,Float> vec1, LinkedHashMap<Integer,Float> vec2) 
-	{
-		double DKL = 0.0;
-		
-		for(Integer key : vec1.keySet())
-		{
-			double P = vec1.get(key);
-
-			if(!vec2.containsKey(key))
-			{
-				//System.out.println("There is no key "+key+" in the vector!");
-				//System.exit(0);
-				continue;
-			}
-
-			double Q = vec2.get(key);
-			
-			DKL += Math.log(P/Q) * P;
-		}
-	
-		return DKL;
 	}
 
-	private static Double calculateJS(LinkedHashMap<Integer, Float> vec1, LinkedHashMap<Integer, Float> vec2) 
-	{
-		double JS = 0.0;
-		
-		if(vec1.keySet().size() == 0 || vec2.keySet().size() == 0)
-			return JS;
-		
-		for(Integer key : vec1.keySet())
-		{
-			double P = vec1.get(key);
-			double Q = 0;
-			
-			if(vec2.containsKey(key))
-			{
-				Q = vec2.get(key);
-			}
-
-			Q = (P+Q)/2;
-			JS += Math.log(P/Q) * P;
-		}
-	
-		for(Integer key : vec2.keySet())
-		{
-			double P = vec2.get(key);
-			double Q = 0;
-			
-			if(vec1.containsKey(key))
-			{
-				Q = vec1.get(key);
-			}
-
-			Q = (P+Q)/2;
-			JS += Math.log(P/Q) * P;
-		}
-		
-		return JS;
-	}
-	
 	public static HashMap<Integer,Integer> ListToMap(List<Integer> list)
 	{
 		HashMap<Integer,Integer> map = new HashMap<Integer,Integer>();
@@ -237,7 +170,7 @@ public class SemSigComparator
 		return overlap;
 	}
 	
-	public void getClosestSenses(String w1, POS tag1, String w2, POS tag2, LKB lkb, SimilarityMeasure measure, int size)
+	public void getClosestSenses(String w1, POS tag1, String w2, POS tag2, LKB lkb, SignatureComparison measure, int size)
 	{
 		double maxSim = 0;
 		IWord src = null;
@@ -282,7 +215,7 @@ public class SemSigComparator
 		
 		SemSigComparator vc = new SemSigComparator();
 	    
-		vc.getClosestSenses("fire", POS.VERB, "probe", POS.NOUN, LKB.WordNetGloss, SimilarityMeasure.WEIGHTED_OVERLAP, 0);
+		vc.getClosestSenses("fire", POS.VERB, "probe", POS.NOUN, LKB.WordNetGloss, new WeightedOverlap(), 0);
 		
 		System.exit(0);
 	      
@@ -316,7 +249,7 @@ public class SemSigComparator
 //		long prev = System.currentTimeMillis();
 //		for(int i=0; i<=100; i++)
 
-		System.out.println(SemSigComparator.compare(v1, v2, SimilarityMeasure.KL_DIVERGENCE, 0) );
+		System.out.println(SemSigComparator.compare(v1, v2, new KLDivergence(), 0) );
 		
 //		long curr = System.currentTimeMillis();
 //		System.out.println(curr - prev);
