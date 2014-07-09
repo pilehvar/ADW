@@ -5,7 +5,25 @@ import java.util.LinkedHashMap;
 import edu.mit.jwi.item.POS;
 
 /**
- * a semantic signature
+ * A Semantic Signature
+ * 
+ * Semantic signatures in the current build are obtained by running the 
+ * Persoanlized PageRank algorithm on the {@link WordNetGloss} graph.
+ * 
+ * The original size of these signatures is equal to the number of connected nodes
+ * in the graph which is about 118K. Due to space constraints, however, a compressed
+ * version of the signatures are provided with this package.
+ * 
+ * A semantic signature is essentially represented as a LinkedHashMap<Integer,Float>
+ * which is a map of dimension-IDs (synsets) and their assigned weight.
+ *  
+ * Compression:
+ * Signatures are truncated to their top-5000 dimensions and normalized.
+ * They are also stored in the sorted format so as to allow faster processing speed. 
+ * Also, to reduce the signatures' size, the dimensions are represented as integer 
+ * keys  (and not the WordNet offsets). This mapping is included in the resources directory.
+ * 
+ *  
  * @author pilehvar
  *
  */

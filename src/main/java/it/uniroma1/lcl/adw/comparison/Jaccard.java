@@ -7,6 +7,13 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * Counts the number of overlapping dimensions across the two signatures
+ * and normalizes that by the total number of 
+ * 
+ * @author pilehvar
+ *
+ */
 public class Jaccard implements SignatureComparison 
 {
 	@Override
@@ -22,7 +29,6 @@ public class Jaccard implements SignatureComparison
 	{
 
 		double overlaps = 0;
-		double normalization = 0;
 		List<Integer> v1Keys = new ArrayList<Integer>(v1.keySet());
 		
 		Set<Integer> v2KeysSet = v2.keySet();
@@ -32,17 +38,13 @@ public class Jaccard implements SignatureComparison
 			if(v2KeysSet.contains(s))
 			{
 				overlaps++;
-				normalization++;
 			}
-			
-			
 		}
 		
-		if(overlaps == 0 || normalization == 0)
+		if(overlaps == 0)
 			return 0;
 		
-		return overlaps/normalization;
+		return 2.0*overlaps/(v1.size()+v2.size());
 	}
-
 
 }

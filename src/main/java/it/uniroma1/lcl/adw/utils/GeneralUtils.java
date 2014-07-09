@@ -20,24 +20,30 @@ import edu.mit.jwi.item.POS;
 
 public class GeneralUtils
 {
-	public static String getTagfromTag(POS tag)
+	/**
+	 * converts {@link POS} to character
+	 * @param tag
+	 * @return
+	 */
+	public static char getTagfromTag(POS tag)
 	{
 		switch(tag)
 		{
 			case NOUN:
-				return "n";
+				return 'n';
 				
 			case VERB:
-				return "v";
+				return 'v';
 				
 			case ADJECTIVE:
-				return "a";
+				return 'a';
 				
 			case ADVERB:
-				return "r";
+				return 'r';
+				
+			default:
+				return 'x';
 		}
-		
-		return null;
 	}
 	
 	public static POS getTagfromTag(String tag)
@@ -54,13 +60,20 @@ public class GeneralUtils
 				return POS.ADVERB;
 			
 		else
-			if(tag.toLowerCase().startsWith("j") || tag.toLowerCase().startsWith("adj") || tag.toLowerCase().startsWith("a"))
+			if(tag.toLowerCase().startsWith("j") 
+					|| tag.toLowerCase().startsWith("adj") 
+					|| tag.toLowerCase().startsWith("a"))
 				return POS.ADJECTIVE;
 			
 		return null;
 	}
 	
 	
+	/**
+	 * transforms character into part of speech ({@link POS})
+	 * @param tag
+	 * @return
+	 */
 	public static POS getTagfromTag(char tag)
 	{
 		switch(tag)
@@ -82,30 +95,15 @@ public class GeneralUtils
 		}
 	}
 	
-	
-	public static String getLongTagFromShort(String tag)
+	/**
+	 * gets an offset in integer form and returns it in full 8-letter string form with tag
+	 * @param intOffset
+	 * @param tag
+	 * @return offset in full-form
+	 */
+	public static String fixOffset(int intOffset, POS tag)
 	{
-		if(tag.toLowerCase().startsWith("n"))
-			return "NN";
-		
-		else
-			if(tag.toLowerCase().startsWith("v"))
-				return "VB";
-		
-		else
-			if(tag.toLowerCase().startsWith("r") || tag.toLowerCase().startsWith("adv"))
-				return "RB";
-			
-		else
-			if(tag.toLowerCase().startsWith("j") || tag.toLowerCase().startsWith("adj") || tag.toLowerCase().startsWith("a"))
-				return "JJ";
-			
-		return null;
-	}
-	
-	public static String fixOffset(int off, POS tag)
-	{
-		String offset = Integer.toString(off);
+		String offset = Integer.toString(intOffset);
 		
 		while(offset.length() < 8)
 			offset = "0" + offset;
@@ -115,31 +113,11 @@ public class GeneralUtils
 		return offset;
 	}
 	
-	public static IntegerCounter<String> counterReader(String path)
-	{
-		IntegerCounter<String> counter = new IntegerCounter<String>();
-		
-		try
-		{
-			BufferedReader br = Files.getBufferedReader(path);
-			
-			while(br.ready())
-			{
-				String line = br.readLine();
-				counter.count(line.split("\t")[0], Integer.parseInt(line.split("\t")[1]));
-			}
-			
-			br.close();
-		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
-		}
-		
-		return counter;
-	}
-	
-	
+	/**
+	 * Normalizes the probability values in a vector so that to sum to 1.0
+	 * @param vector
+	 * @return
+	 */
 	public static Map<Integer,Float> normalizeVector(Map<Integer,Float> vector)
 	{
 		float total = 0;
@@ -170,6 +148,11 @@ public class GeneralUtils
 		return normalizedVector;
 	}
 	
+	/**
+	 * return short (single letter) form of the tag, covers only nouns, verbs, adjectives, and adverbs 
+	 * @param longTag
+	 * @return
+	 */
 	public static String shortenTagString(String longTag)
 	{
 		longTag = longTag.toLowerCase();
@@ -189,6 +172,13 @@ public class GeneralUtils
 			return null;
 	}
 	
+	/**
+	 * Truncates a vector to the top-n elements
+	 * @param vector
+	 * @param size
+	 * @param normalize
+	 * @return truncated vector
+	 */
 	public static LinkedHashMap<Integer,Float> truncateVector(Map<Integer,Float> vector, int size, boolean normalize)
 	{
 		LinkedHashMap<Integer,Float> sortedMap = new LinkedHashMap<Integer,Float>();
@@ -209,6 +199,13 @@ public class GeneralUtils
 		return sortedMap;
 	}
 	
+	/**
+	 * Truncates a vector to the top-n elements (assumes that the input vector is already sorted)
+	 * @param vector
+	 * @param size
+	 * @param normalize
+	 * @return truncated vector
+	 */
 	public static LinkedHashMap<Integer,Float> truncateSortedVector(LinkedHashMap<Integer,Float> vector, int size)
 	{
 		LinkedHashMap<Integer,Float> sortedMap = new LinkedHashMap<Integer,Float>();
@@ -223,6 +220,11 @@ public class GeneralUtils
 		return normalizeVector(sortedMap);
 	}
 	
+	/**
+	 * Obtains the list of all offsets for all senses of all parts of speech of an input term 
+	 * @param word
+	 * @return
+	 */
 	public static List<String> getWordOffsets(String word)
 	{
 		List<String> allOffsets = new ArrayList<String>();
@@ -233,6 +235,12 @@ public class GeneralUtils
 		return allOffsets;
 	}
 	
+	/**
+	 * Obtains the list of offsets for all senses of an input term 
+	 * @param word
+	 * @param tag
+	 * @return
+	 */
 	public static List<String> getWordOffsets(String word, POS tag)
 	{
 		List<IWord> senses = WordNet.getInstance().getSenses(word,tag);
@@ -249,27 +257,10 @@ public class GeneralUtils
 		return wordOffsets;
 	}
 	
-	
-	public static String getOffsetFromPath(String path)
-	{
-		String comps[] = path.split("/");
-		return comps[comps.length-1].replace(".ppv", "");
-	}
-	
-	public static LinkedHashMap<String,Double> normalize(LinkedHashMap<String,Double> vector)
-	{
-		LinkedHashMap<String,Double> normalizedVector = new LinkedHashMap<String,Double>();
-		
-		double sum = 0;
-		for(String w : vector.keySet())
-			sum += vector.get(w);
-				
-		for(String w : vector.keySet())
-			normalizedVector.put(w, vector.get(w)/sum);
-			
-		return normalizedVector;
-	}
-
+	/**
+	 * gets the mapping from integer IDs to WordNet 3.0 synset offsets
+	 * @return
+	 */
 	public static HashMap<String,String> getIDtoOffsetMap()
 	{
 		HashMap<String,String> map = new HashMap<String,String>();
@@ -294,6 +285,21 @@ public class GeneralUtils
 		return map;
 	}
 	
+	/**
+	 * extracts the synset offset from a signature's path
+	 * @param path
+	 * @return
+	 */
+	public static String getOffsetFromPath(String path)
+	{
+		String comps[] = path.split("/");
+		return comps[comps.length-1].replace(".ppv", "");
+	}
+	
+	/**
+	 * gets the mapping from WordNet 3.0 synset offsets to integer IDs
+	 * @return
+	 */
 	public static HashMap<String,String> getOffsettoIDMap()
 	{
 		HashMap<String,String> map = new HashMap<String,String>();

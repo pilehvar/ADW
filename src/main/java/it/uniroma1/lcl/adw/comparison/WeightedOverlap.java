@@ -7,11 +7,22 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Set;
 
+/**
+ * A non-parametric approach for comparing two multinomial distributions proposed in:
+ * 
+ * M. T. Pilehvar, D. Jurgens and R. Navigli. 
+ * Align, Disambiguate and Walk: A Unified Approach for Measuring Semantic Similarity. ACL 2013.
+ * 
+ * The approach compares the ranking of the dimensions across the two distributions.
+ * The approach penalizes the differences in the top-ranking dimensions more than it 
+ * does for the lower ones.
+ *  
+ * @author pilehvar
+ *
+ */
 public class WeightedOverlap implements SignatureComparison
 {
-
 	@Override
 	public double compare(SemSig v1, SemSig v2) 
 	{
@@ -23,33 +34,38 @@ public class WeightedOverlap implements SignatureComparison
 			LinkedHashMap<Integer, Float> v1,
 			LinkedHashMap<Integer, Float> v2) 
 	{
-
-		double overlaps = 0;
-		double normalization = 0;
 		List<Integer> v2Keys = new ArrayList<Integer>(v2.keySet());
 		List<Integer> v1Keys = new ArrayList<Integer>(v1.keySet());
 		
-		HashMap<Integer,Integer> map = SemSigComparator.ListToMap(v2Keys);
+		return compare(v1Keys,v2Keys);
+	}
+	
+	public double compare(List<Integer> v1,
+							List<Integer> v2) 
+	{
+
+		double overlaps = 0;
+		double normalization = 0;
 		
-		Set<Integer> v2KeysSet = v2.keySet();
+		HashMap<Integer,Integer> map = SemSigComparator.ListToMap(v2);
 		
 		int index = 0;
-		for(Integer s : v1Keys)
+		
+		for(Integer s : v1)
 		{
-			if(v2KeysSet.contains(s))
+			//works only on the overlapping dimensions between v1 and v2
+			if(v2.contains(s))
 			{
-				overlaps += 1.0/((index+1)+(map.get(s)+1));	//linear
+				overlaps += 1.0/((index+1)+(map.get(s)+1));	
 				normalization += 1.0/(2*(index+1));
 				index++;
 			}
-			
-			
 		}
 		
+		//if the two signatures have no dimension in common
 		if(overlaps == 0 || normalization == 0)
 			return 0;
 		
 		return overlaps/normalization;
 	}
-	
 }
