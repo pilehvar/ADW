@@ -2,7 +2,6 @@ package it.uniroma1.lcl.adw.utils;
 
 import it.uniroma1.lcl.adw.ADWConfiguration;
 import it.uniroma1.lcl.jlt.util.Files;
-import it.uniroma1.lcl.jlt.util.IntegerCounter;
 import it.uniroma1.lcl.jlt.util.Maps;
 import it.uniroma1.lcl.jlt.util.Maps.SortingOrder;
 import it.uniroma1.lcl.jlt.wordnet.WordNet;
