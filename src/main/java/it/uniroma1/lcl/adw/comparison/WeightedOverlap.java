@@ -23,13 +23,11 @@ import java.util.List;
  */
 public class WeightedOverlap implements SignatureComparison
 {
-	@Override
 	public double compare(SemSig v1, SemSig v2) 
 	{
 		return compare(v1.getVector(),v2.getVector());
 	}
 
-	@Override
 	public double compare(
 			LinkedHashMap<Integer, Float> v1,
 			LinkedHashMap<Integer, Float> v2) 
