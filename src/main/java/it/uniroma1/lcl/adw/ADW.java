@@ -50,7 +50,7 @@ public class ADW
 	
 	Set<String> WordNetWords = null; 
 	
-	private ADW()
+	public ADW()
 	{
 		//the signature comparison measure used during similarity-based disambiguation
 	     try
@@ -441,6 +441,12 @@ public class ADW
         String text4 = "windmill%1:06:01::";
         LexicalItemType text4Type = LexicalItemType.SENSE_KEYS;
         
+        String text5 = "terminate";
+        LexicalItemType text5Type = LexicalItemType.SURFACE;
+        
+        String text6 = "fire#v";
+        LexicalItemType text6Type = LexicalItemType.SURFACE_TAGGED;
+        
         //if lexical items has to be disambiguated
         DisambiguationMethod disMethod = DisambiguationMethod.ALIGNMENT_BASED;
         
@@ -482,6 +488,13 @@ public class ADW
                 text3Type, text4Type);
         System.out.println(score5+"\t"+text3+"\t"+text4);
 
+        double score6 = pipeLine.getPairSimilarity(
+                text5, text6,
+                disMethod, 
+                measure,
+                text5Type, text6Type);
+        System.out.println(score6+"\t"+text5+"\t"+text6);
+        
 	}
 	
 	//TODO: automatic detection of text types
