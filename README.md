@@ -97,7 +97,7 @@ For example:
        					      srcTextType, trgTextType); 
     System.out.println(score);
 
-## 4.1 INPUT FORMATS
+### 4.1 INPUT FORMATS
 
 In this version, we support four different input formats:
 
@@ -111,7 +111,7 @@ In this version, we support four different input formats:
 
 
 
-## 4.2 SIGNATURE COMPARISON METHODS
+### 4.2 SIGNATURE COMPARISON METHODS
 
 1- WeightedOverlap
 
