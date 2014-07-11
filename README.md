@@ -94,8 +94,8 @@ For example:
     ADW pipeLine = new ADW();
 
     double score = pipeLine.getFastSimilarity(text1, text2,
-        						disMethod, measure,
-       						srcTextType, trgTextType); 
+        				      disMethod, measure,
+       					      srcTextType, trgTextType); 
     System.out.println(score);
 
 --------------------------------------
