@@ -4,7 +4,6 @@ ADW
 ADW (Align, Disambiguate and Walk) version 1.0 -- July 15, 2014.
 
 
-=========================
 CONTENTS
 =========================
 
