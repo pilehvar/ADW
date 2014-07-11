@@ -17,7 +17,6 @@ CONTENTS
 5. License
 
 
-=========================
 1. INTRODUCTION
 =========================
 
@@ -26,7 +25,7 @@ http://wwwusers.di.uniroma1.it/~navigli/pubs/ACL_2013_Pilehvar_Jurgens_Navigli.p
 
 This release version is prepared by Mohammad Taher Pilehvar (Sapienza University of Rome).
 
-=========================
+
 2. INSTALLATION
 =========================
 
@@ -44,7 +43,7 @@ wn30g.ppv.path=/home/username/resources/ppvs.30g.5k/
 4- You are ready to go! To get started, follow 5 (Quick start).
 
 
-=========================
+
 3. REQUIREMENTS
 =========================
 
@@ -53,7 +52,7 @@ wn30g.ppv.path=/home/username/resources/ppvs.30g.5k/
 - WordNet 3.0 dictionary files (already included in the resources directory)
 
 
-=========================
+
 4. QUICK START
 =========================
 
@@ -100,7 +99,7 @@ For example:
 
 --------------------------------------
 4.1 INPUT FORMATS
---------------------------------------
+
 
 In this version, we support four different input formats:
 
@@ -115,7 +114,6 @@ In this version, we support four different input formats:
 
 --------------------------------------
 4.2 SIGNATURE COMPARISON METHODS
---------------------------------------
 
 1- WeightedOverlap
 
@@ -129,7 +127,7 @@ For details of the above three, please see Pilehvar et al. (2013)
 
 5- JensenShannon
 
-=========================
+
 5. LICENSE
 =========================
 
