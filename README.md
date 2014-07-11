@@ -103,9 +103,13 @@ For example:
 --------------------------------------
 
 In this version, we support XX different types of inputs:
+
 1- Text in surface form “SURFACE” (e.g., “A baby is playing with a dog”)
+
 2- Lemmas with part of speech tags “SURFACE_TAGGED” (e.g., “baby#n be#v play#n dog#n”). We support only four parts of speech: nouns (n), verbs (v), adjectives (a), and adverbs (r).
+
 3- WordNet 3.0 sense keys (e.g., “baby%1:18:00:: play%2:33:00:: dog%1:05:00::”)
+
 4- WordNet 3.0 synset offsets (e.g., “09827683-n 01072949-v 02084071-n”)
 
 
@@ -113,11 +117,18 @@ In this version, we support XX different types of inputs:
 4.2 SIGNATURE COMPARISON METHODS
 --------------------------------------
 
-1- WeightedOverlap (proposed by Pilehvar et al. 2013)
+1- WeightedOverlap
+
 2- Cosine
+
 3- Jaccard
+
+For details of the above three, please see Pilehvar et al. (2013)
+
 4- KLDivergence
-5- JensenShanno
+
+5- JensenShannon
+
 =========================
 5. LICENSE
 =========================
@@ -137,7 +148,7 @@ M. T. Pilehvar, D. Jurgens and R. Navigli. Align, Disambiguate and Walk: A Unifi
 
 For more information please contact:
 
-Mohammad Taher Pilehvar
+	Mohammad Taher Pilehvar
 	Sapienza University of Rome
 	pilehvar atsign di <dot> uniroma1 <dot> it
 
