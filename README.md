@@ -99,7 +99,7 @@ For example:
 
 ### 4.1 INPUT FORMATS
 
-In this version, we support four different input formats:
+In this version, we support five different input formats:
 
 1- Text in surface form “SURFACE” (e.g., “A baby is playing with a dog”)
 
@@ -109,7 +109,7 @@ In this version, we support four different input formats:
 
 4- WordNet 3.0 synset offsets (e.g., “09827683-n 01072949-v 02084071-n”)
 
-
+5- WordNet 3.0 Word sense (e.g., "baby.n.1 play.v.1 dog.n.1")
 
 ### 4.2 SIGNATURE COMPARISON METHODS
 
