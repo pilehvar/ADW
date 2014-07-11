@@ -102,7 +102,7 @@ For example:
 4.1 INPUT FORMATS
 --------------------------------------
 
-In this version, we support XX different types of inputs:
+In this version, we support four different input formats:
 
 1- Text in surface form “SURFACE” (e.g., “A baby is playing with a dog”)
 
