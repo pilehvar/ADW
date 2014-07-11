@@ -97,8 +97,8 @@ For example:
        					      srcTextType, trgTextType); 
     System.out.println(score);
 
---------------------------------------
 4.1 INPUT FORMATS
+--------------------------------------
 
 
 In this version, we support four different input formats:
@@ -112,8 +112,9 @@ In this version, we support four different input formats:
 4- WordNet 3.0 synset offsets (e.g., “09827683-n 01072949-v 02084071-n”)
 
 
---------------------------------------
+
 4.2 SIGNATURE COMPARISON METHODS
+--------------------------------------
 
 1- WeightedOverlap
 
