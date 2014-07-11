@@ -11,8 +11,8 @@ CONTENTS
 2. Installation
 3. Requirements
 4. Quick start
- 4.1. Input types
- 4.2. Signature comparison methods
+4.1. Input types
+4.2. Signature comparison methods
 5. License
 
 
