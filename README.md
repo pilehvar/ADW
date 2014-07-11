@@ -59,10 +59,10 @@ wn30g.ppv.path=/home/username/resources/ppvs.30g.5k/
 
 The following is a usage example for measuring semantic similarity using ADW.
 
-ADW pipeLine = new ADW();
-
-double score = pipeLine.getFastSimilarity(text1, text2,
-        						disMethod, measure,
+	ADW pipeLine = new ADW();
+	
+	double score = pipeLine.getFastSimilarity(text1, text2,
+        					disMethod, measure,
        						srcTextType, trgTextType); 
 
 
