@@ -11,7 +11,7 @@ CONTENTS
 2. [Installation](#2-installation)
 3. [Requirements](#3-requirements)
 4. [Quick start](#4-quick-start)
-    - 4.1. [Input types](#41-input-types)
+    - 4.1. [Input formats](#41-input-formats)
     - 4.2. [Signature comparison methods](#42-signature-comparison-methods)
 5. [License](#5-license)
 
@@ -101,20 +101,15 @@ For example:
 
 In this version, we support five different input formats:
 
-1- Text in surface form “SURFACE” (e.g., “A baby is playing with a dog”)
-
-2- Lemmas with part of speech tags “SURFACE_TAGGED” (e.g., “baby#n be#v play#n dog#n”). We support only four parts of speech: nouns (n), verbs (v), adjectives (a), and adverbs (r).
-
-3- WordNet 3.0 sense keys (e.g., “baby%1:18:00:: play%2:33:00:: dog%1:05:00::”)
-
-4- WordNet 3.0 synset offsets (e.g., “09827683-n 01072949-v 02084071-n”)
-
-5- WordNet 3.0 Word sense (e.g., "baby.n.1 play.v.1 dog.n.1")
+- **SURFACE** Text in surface form (e.g., “A baby is playing with a dog”)
+- **SURFACE_TAGGED** Lemmas with part of speech tags (e.g., “baby#n be#v play#n dog#n”). We support only four parts of speech: nouns (n), verbs (v), adjectives (a), and adverbs (r).
+- **SENSE_KEYS** WordNet 3.0 sense keys (e.g., “baby%1:18:00:: play%2:33:00:: dog%1:05:00::”)
+- **SENSE_OFFSETS** WordNet 3.0 synset offsets (e.g., “09827683-n 01072949-v 02084071-n”)
+- **WORD_SENSE** WordNet 3.0 Word sense (e.g., "baby.n.1 play.v.1 dog.n.1" or "baby#n#1 play#v#1 dog#n#1")
 
 ### 4.2 SIGNATURE COMPARISON METHODS
 
 1- WeightedOverlap
-
 2- Cosine
 
 3- Jaccard
