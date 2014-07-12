@@ -7,12 +7,12 @@ ADW (Align, Disambiguate and Walk) version 1.0 -- July 15, 2014.
 CONTENTS
 =========================
 
-1. Introduction
+1. [Introduction](https://github.com/pilehvar/ADW/blob/master/README.md#1-introduction)
 2. Installation
 3. Requirements
 4. Quick start
-4.1. Input types
-4.2. Signature comparison methods
+    - 4.1. Input types
+    - 4.2. Signature comparison methods
 5. License
 
 
