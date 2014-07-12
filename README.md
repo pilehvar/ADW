@@ -143,8 +143,8 @@ If you use this system, please cite the following paper:
 
 For more information please contact:
 
-> Mohammad Taher Pilehvar
-  Sapienza University of Rome
+> Mohammad Taher Pilehvar,
+  Sapienza University of Rome,
   pilehvar atsign di <dot> uniroma1 <dot> it
 
 For bug reports, fixes and issues please use our github page:
