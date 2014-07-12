@@ -67,11 +67,13 @@ The following is a usage example for measuring semantic similarity using ADW.
 
 Where:
 
-text1 and text2 are the two lexical items to be compared. The types of these lexical items is denoted by srcTextType and trgTextType. For supported input formats please see 5.1.
+`text1` and `text2` are the two lexical items to be compared. The types of these lexical items is denoted by `srcTextType` and `trgTextType`, respectively. For supported input formats please see 4.1.
 
-disMethod specifies if the pair of lexical items have to be disambiguated or not. In the current version we support one type of disambiguation (“ALIGNMENT_BASED”) or no disambiguation (“NONE”).
+`disMethod` specifies if the pair of lexical items have to be disambiguated or not. In the current version we support:
+- **ALIGNMENT_BASED** Alignment-based disambiguation (see Pilehvar et al., 2013)
+- **NONE** No disambiguation
 
-measure denotes the method utilized for comparing pairs of semantic signatures. For supported methods please see 5.2.
+`measure` denotes the method utilized for comparing pairs of semantic signatures. For supported methods please see 4.2.
 
 
 For example:
