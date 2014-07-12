@@ -76,26 +76,27 @@ measure denotes the method utilized for comparing pairs of semantic signatures. 
 
 For example:
 
-    //the two lexical items to be compared
-    String text1 = "a mill that is powered by the wind";    
-    String text2 = "windmill.n.1";
+	//the two lexical items to be compared
+	String text1 = "a mill that is powered by the wind";    
+	String text2 = "windmill.n.1";
 
-    //types of the two lexical items
-    LexicalItemType srcTextType = LexicalItemType.SURFACE;  
-    LexicalItemType trgTextType = LexicalItemType.WORD_SENSE;
+	//types of the two lexical items
+	LexicalItemType srcTextType = LexicalItemType.SURFACE;  
+	LexicalItemType trgTextType = LexicalItemType.WORD_SENSE;
 
-    //if lexical items has to be disambiguated
-    DisambiguationMethod disMethod = DisambiguationMethod.ALIGNMENT_BASED;      
+	//if lexical items has to be disambiguated
+	DisambiguationMethod disMethod = DisambiguationMethod.ALIGNMENT_BASED;      
 
-    //measure for comparing semantic signatures
-    SimilarityMeasure measure = SimilarityMeasure.WEIGHTED_OVERLAP; 
+	//measure for comparing semantic signatures
+	SimilarityMeasure measure = SimilarityMeasure.WEIGHTED_OVERLAP; 
 
-    ADW pipeLine = new ADW();
+	ADW pipeLine = new ADW();
 
-    double score = pipeLine.getFastSimilarity(text1, text2,
+	double score = pipeLine.getFastSimilarity(text1, text2,
         				      disMethod, measure,
        					      srcTextType, trgTextType); 
-    System.out.println(score);
+	System.out.println(score);
+
 
 ### 4.1 INPUT FORMATS
 
@@ -115,8 +116,10 @@ In this version, we support five different input formats:
 
 For details of the above three, please see Pilehvar et al. (2013)
 
-- **KLDivergence**
-- **JensenShannon**
+- **KLDivergence** 
+    - details: http://en.wikipedia.org/wiki/Kullback%E2%80%93Leibler_divergence
+- **JensenShannon** divergence 
+    - details: http://en.wikipedia.org/wiki/Jensen%E2%80%93Shannon_divergence
 
 
 5. LICENSE
