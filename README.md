@@ -11,9 +11,9 @@ CONTENTS
 2. [Installation](#2-installation)
 3. [Requirements](#3-requirements)
 4. [Quick start](#4-quick-start)
-    - 4.1. [Input types](#4.1.-input-types)
-    - 4.2. [Signature comparison methods](#4.2.-signature-comparison-methods)
-5. [License](#5.-license)
+    - 4.1. [Input types](#4.1-input-types)
+    - 4.2. [Signature comparison methods](#4.2-signature-comparison-methods)
+5. [License](#5-license)
 
 
 
