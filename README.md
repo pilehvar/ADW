@@ -104,11 +104,11 @@ For example:
 
 In this version, we support five different input formats:
 
-- **SURFACE** Text in surface form (e.g., “A baby is playing with a dog”)
-- **SURFACE_TAGGED** Lemmas with part of speech tags (e.g., “baby#n be#v play#n dog#n”). We support only four parts of speech: nouns (n), verbs (v), adjectives (a), and adverbs (r).
-- **SENSE_KEYS** WordNet 3.0 sense keys (e.g., “baby%1:18:00:: play%2:33:00:: dog%1:05:00::”)
-- **SENSE_OFFSETS** WordNet 3.0 synset offsets (e.g., “09827683-n 01072949-v 02084071-n”)
-- **WORD_SENSE** WordNet 3.0 Word sense (e.g., "baby.n.1 play.v.1 dog.n.1" or "baby#n#1 play#v#1 dog#n#1")
+- **SURFACE** Text in surface form (e.g., `A baby is playing with a dog`)
+- **SURFACE_TAGGED** Lemmas with part of speech tags (e.g., `baby#n be#v play#n dog#n`). We support only four parts of speech: nouns (n), verbs (v), adjectives (a), and adverbs (r).
+- **SENSE_KEYS** WordNet 3.0 sense keys (e.g., `baby%1:18:00:: play%2:33:00:: dog%1:05:00::`)
+- **SENSE_OFFSETS** WordNet 3.0 synset offsets (e.g., `09827683-n 01072949-v 02084071-n`)
+- **WORD_SENSE** WordNet 3.0 Word sense (e.g., `baby.n.1 play.v.1 dog.n.1` or `baby#n#1 play#v#1 dog#n#1`)
 
 ### 4.2 SIGNATURE COMPARISON METHODS
 
@@ -138,14 +138,14 @@ without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 If you use this system, please cite the following paper:
 
 > M. T. Pilehvar, D. Jurgens and R. Navigli. Align, Disambiguate and Walk: A Unified Approach for Measuring Semantic Similarity.
-	Proceedings of the 51st Annual Meeting of the Association for Computational Linguistics (ACL 2013), Sofia, Bulgaria, August 4-9, 2013, pp. 1341-1351.
+> Proceedings of the 51st Annual Meeting of the Association for Computational Linguistics (ACL 2013), Sofia, Bulgaria, August 4-9, 2013, pp. 1341-1351.
 
 
 For more information please contact:
 
-	Mohammad Taher Pilehvar
-	Sapienza University of Rome
-	pilehvar atsign di <dot> uniroma1 <dot> it
+> Mohammad Taher Pilehvar
+  Sapienza University of Rome
+  pilehvar atsign di <dot> uniroma1 <dot> it
 
 For bug reports, fixes and issues please use our github page:
 https://github.com/pilehvar/ADW
