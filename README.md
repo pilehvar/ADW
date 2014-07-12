@@ -109,16 +109,14 @@ In this version, we support five different input formats:
 
 ### 4.2 SIGNATURE COMPARISON METHODS
 
-1- WeightedOverlap
-2- Cosine
-
-3- Jaccard
+- **WeightedOverlap**
+- **Cosine**
+- **Jaccard**
 
 For details of the above three, please see Pilehvar et al. (2013)
 
-4- KLDivergence
-
-5- JensenShannon
+- **KLDivergence**
+- **JensenShannon**
 
 
 5. LICENSE
