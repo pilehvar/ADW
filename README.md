@@ -44,7 +44,7 @@ For example:
 
 	wn30g.ppv.path=/home/username/resources/ppvs.30g.5k/
 
-4- You are ready to go! To get started, follow 5 (Quick start).
+4- You are ready to go! To get started, continue reading [Quick start](#4-quick-start).
 
 
 
