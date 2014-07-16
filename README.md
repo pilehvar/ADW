@@ -52,7 +52,7 @@ For example:
 =========================
 
 - Java 6 (JRE 1.6) or higher
-- Semantic signatures (refer 2. Installation)
+- Semantic signatures (see [Installation](#2-installation))
 - WordNet 3.0 dictionary files (already included in the resources directory)
 
 
@@ -116,6 +116,8 @@ In this version, we support five different input formats:
 
 ### 4.2 SIGNATURE COMPARISON METHODS
 
+Different signature comparison methods are included (implement the SignatureComparison interface):
+
 - **WeightedOverlap**
 - **Cosine**
 - **Jaccard**
@@ -147,9 +149,9 @@ If you use this system, please cite the following paper:
 
 For more information please contact:
 
-> Mohammad Taher Pilehvar,
-  Sapienza University of Rome,
-  pilehvar atsign di <dot> uniroma1 <dot> it
+Mohammad Taher Pilehvar,
+Sapienza University of Rome,
+pilehvar atsign di <dot> uniroma1 <dot> it
 
 For bug reports, fixes and issues please use our github page:
 https://github.com/pilehvar/ADW
