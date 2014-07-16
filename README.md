@@ -94,14 +94,14 @@ For example:
 	DisambiguationMethod disMethod = DisambiguationMethod.ALIGNMENT_BASED;      
 
 	//measure for comparing semantic signatures
-	SimilarityMeasure measure = SimilarityMeasure.WEIGHTED_OVERLAP; 
+	SignatureComparison measure = new WeightedOverlap(); 
 
 	ADW pipeLine = new ADW();
 
-	double score = pipeLine.getFastSimilarity(text1, text2,
+	double similarity = pipeLine.getFastSimilarity(text1, text2,
         				      disMethod, measure,
        					      srcTextType, trgTextType); 
-	System.out.println(score);
+	System.out.println(similarity);
 
 
 ### 4.1 INPUT FORMATS
