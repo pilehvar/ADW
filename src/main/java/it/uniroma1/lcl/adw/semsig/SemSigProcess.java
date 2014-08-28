@@ -7,14 +7,17 @@ import it.uniroma1.lcl.adw.utils.GeneralUtils;
 import it.uniroma1.lcl.adw.utils.SemSigUtils;
 import it.uniroma1.lcl.adw.utils.WordNetUtils;
 import it.uniroma1.lcl.jlt.util.Files;
+import it.uniroma1.lcl.jlt.wordnet.WordNet;
 import it.uniroma1.lcl.jlt.wordnet.WordNetVersion;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -386,5 +389,47 @@ public class SemSigProcess
 //		System.out.println(sim);
 		
 		System.out.println(SemSigProcess.getInstance().getSemSigFromWord("monkey", POS.NOUN, LKB.WordNetGloss, 0, null));
+	}
+	
+	/**
+	 * gets a word#pos and returns all the offsets associated with that word and part of speech
+	 * @param wordPos
+	 * @return
+	 */
+	public Set<String> getWordNetOffsets(String wordPos)
+	{
+		Set<String> offsets = new HashSet<String>();
+
+		wordPos = wordPos.trim();
+		
+		if(wordPos.matches("[0-9]*-[nrva]"))
+		{
+			offsets.add(wordPos);
+		}
+		else
+		{
+			String comps[] = wordPos.split("#");
+			
+			if(comps.length != 2)
+			{
+				log.error("mal-formatted word-pos: "+wordPos);
+				return null;
+			}
+			
+			String word = comps[0];
+			POS pos = GeneralUtils.getTagfromTag(comps[1]);
+			
+			List<IWord> senses = WordNet.getInstance().getSenses(word, pos);
+			
+			if(senses == null)
+				return null;
+			
+			for(IWord sense : senses)
+			{
+				offsets.add(GeneralUtils.fixOffset(sense.getSynset().getOffset(), pos));
+			}
+		}
+		
+		return offsets;
 	}
 }
