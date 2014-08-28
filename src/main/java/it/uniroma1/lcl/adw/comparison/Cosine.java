@@ -21,6 +21,7 @@ public class Cosine implements SignatureComparison
 		//sorted or not, it does not change the comparison procedure
 		
 		return Maths.cosineSimilarity(v1, v2);
+		
 	}
 
 }
