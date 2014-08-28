@@ -29,8 +29,8 @@ public class Jaccard implements SignatureComparison
 	{
 		if(!sorted)   
 		{
-			v1 = SemSigUtils.sortSemSig(v1);
-			v2 = SemSigUtils.sortSemSig(v2);
+			v1 = SemSigUtils.sortVector(v1);
+			v2 = SemSigUtils.sortVector(v2);
 		}
 		
 		double overlaps = 0;
