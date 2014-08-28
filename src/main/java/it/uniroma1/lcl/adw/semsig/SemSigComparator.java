@@ -29,12 +29,14 @@ public class SemSigComparator
 			SemSig v1, 
 			SemSig v2, 
 			SignatureComparison measure, 
-			int size)
+			int size,
+			boolean sorted,
+			boolean normalized)
 	{
 		if(v1 == null || v2 == null)
 			return 0.0;
 		
-		return compareSortedNormalizedMaps(v1.getVector(), v2.getVector(), measure, size);
+		return compare(v1.getVector(), v2.getVector(), measure, size, sorted, normalized);
 	}
 	
 	public static Double compareSortedNormalizedMaps(
@@ -43,38 +45,40 @@ public class SemSigComparator
 			SignatureComparison measure, 
 			int size)
 	{
-		return compare(vec1, vec2, measure, size, true);
+		return compare(vec1, vec2, measure, size, true, true);
 	}
 	
 	public static Double compare(
 			LinkedHashMap<Integer,Float> vec1, 
 			LinkedHashMap<Integer,Float> vec2, 
 			SignatureComparison measure, int size, 
-			boolean sortedNormalized)
+			boolean sorted,
+			boolean normalized)
 	{
-		int newSize = size;
 		
-		if(size == 0)
+		int v1Size = vec1.size();
+		int v2Size = vec2.size();
+		
+		if(size != 0 && size < v1Size)
 		{
-			newSize = (vec1.size() < vec2.size()) ? vec1.size() : vec2.size(); 
+			vec1 = SemSigUtils.truncateSemSig(vec1, size);
+			vec1 = SemSigUtils.normalizeSemSigs(vec1);
 		}
 		
-		if(size > vec1.size())
-			newSize = vec1.size();
-		
-		if(size > vec2.size())
-			newSize = vec2.size();
-		
-		if(!sortedNormalized || newSize != size || size != vec1.size() || size != vec2.size())  
+		if(size != 0 && size < v2Size)
 		{
-			vec1 = SemSigUtils.truncateSemSig(vec1, newSize, true);
-			vec2 = SemSigUtils.truncateSemSig(vec2, newSize, true);
+			vec2 = SemSigUtils.truncateSemSig(vec2, size);
+			vec2 = SemSigUtils.normalizeSemSigs(vec2);
 		}
 		
-		size = newSize;
+		if(!normalized)
+		{
+			vec1 = SemSigUtils.normalizeSemSigs(vec1);
+			vec2 = SemSigUtils.normalizeSemSigs(vec2);
+		}
 		
-		return measure.compare(vec1, vec2);
-		
+		//The vector should be normalized here, sorting is done within the compare implementation
+		return measure.compare(vec1, vec2, sorted);
 	}
 
 	public static HashMap<Integer,Integer> ListToMap(List<Integer> list)
@@ -138,6 +142,6 @@ public class SemSigComparator
 		
 		System.out.println(v1.getVector().size()+"\t"+v2.getVector().size());
 		
-		System.out.println(SemSigComparator.compare(v1, v2, new KLDivergence(), 0) );
+		System.out.println(SemSigComparator.compare(v1, v2, new KLDivergence(), 0, true, true) );
 	}
 }
