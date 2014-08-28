@@ -14,50 +14,7 @@ import java.util.Set;
 public class SemSigUtils 
 {
 	
-	public static LinkedHashMap<Integer,Float> truncateSortedVector(LinkedHashMap<Integer,Float> vector, int size)
-	{
-		LinkedHashMap<Integer,Float> sortedMap = new LinkedHashMap<Integer,Float>();
-		
-		int i = 1;
-		for(int key : vector.keySet())
-		{
-			sortedMap.put(key, vector.get(key));
-			if(i++ > size) break;
-		}
-		
-		return normalizeSemSigs(sortedMap);
-	}
-	
-	public static Map<Integer,Float> normalizeVector(Map<Integer,Float> vector)
-	{
-		float total = 0;
-		for(int s : vector.keySet())
-			total += vector.get(s);
-		
-		Map<Integer,Float> normalizedVector = new HashMap<Integer,Float>();
-		
-		for(int s : vector.keySet())
-			normalizedVector.put(s, vector.get(s)/total);
-		
-		return normalizedVector;
-	}
-	
-	
-	public static LinkedHashMap<Integer,Float> normalizeSemSigs(LinkedHashMap<Integer,Float> vector)
-	{
-		float total = 0;
-		for(int s : vector.keySet())
-			total += vector.get(s);
-		
-		LinkedHashMap<Integer,Float> normalizedVector = new LinkedHashMap<Integer,Float>();
-		
-		for(int s : vector.keySet())
-			normalizedVector.put(s, vector.get(s)/total);
-		
-		return normalizedVector;
-	}
-	
-	public static LinkedHashMap<Integer,Float> sortSemSig(Map<Integer,Float> vector)
+	public static LinkedHashMap<Integer,Float> sortVector(Map<Integer,Float> vector)
 	{
 		LinkedHashMap<Integer,Float> sortedMap = new LinkedHashMap<Integer,Float>();
 		
@@ -67,19 +24,31 @@ public class SemSigUtils
 		return sortedMap;
 	}
 	
-	public static LinkedHashMap<Integer,Float> truncateSemSig(Map<Integer,Float> vector, int size)
+	/**
+	 * Truncates a vector to the top-n elements
+	 * @param vector
+	 * @param size
+	 * @param normalize
+	 * @return truncated vector
+	 */	
+	public static LinkedHashMap<Integer,Float> truncateVector(Map<Integer,Float> vector, int size, boolean normalize)
 	{
 		LinkedHashMap<Integer,Float> truncatedMap = new LinkedHashMap<Integer,Float>();
 		
-		int i = 1;
-		for(int key : vector.keySet())
+		int i = 0;
+		for(int key : sortVector(vector).keySet())
 		{
 			truncatedMap.put(key, vector.get(key));
 			
 			if(i++ >= size) break;
 		}
 		
-		return normalizeSemSigs(truncatedMap);
+		if(normalize)
+		{
+			truncatedMap = new LinkedHashMap<Integer,Float>(normalizeVector(truncatedMap));
+		}
+		
+		return truncatedMap;
 	}
 
 	/**
@@ -124,4 +93,46 @@ public class SemSigUtils
 		return overallSig;
 	}
 
+	/**
+	 * Truncates a vector to the top-n elements (assumes that the input vector is already sorted)
+	 * @param vector
+	 * @param size
+	 * @param normalize
+	 * @return truncated vector
+	 */
+	public static LinkedHashMap<Integer,Float> truncateSortedVector(LinkedHashMap<Integer,Float> vector, int size)
+	{
+		LinkedHashMap<Integer,Float> sortedMap = new LinkedHashMap<Integer,Float>();
+		
+		int i = 1;
+		for(int key : vector.keySet())
+		{
+			sortedMap.put(key, vector.get(key));
+			if(i++ > size) break;
+		}
+		
+		return new LinkedHashMap<Integer,Float>(normalizeVector(sortedMap));
+	}
+	
+	/**
+	 * Normalizes the probability values in a vector so that to sum to 1.0
+	 * @param vector
+	 * @return
+	 */
+	public static Map<Integer,Float> normalizeVector(Map<Integer,Float> vector)
+	{
+		float total = 0;
+		
+		for(int s : vector.keySet())
+			total += vector.get(s);
+		
+		Map<Integer,Float> normalizedVector = new HashMap<Integer,Float>();
+		
+		for(int s : vector.keySet())
+			normalizedVector.put(s, vector.get(s)/total);
+		
+		return normalizedVector;
+	}
+	
 }
+
