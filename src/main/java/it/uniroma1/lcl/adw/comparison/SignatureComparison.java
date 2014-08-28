@@ -12,6 +12,6 @@ import it.uniroma1.lcl.adw.semsig.SemSig;
  */
 public interface SignatureComparison 
 {
-	double compare(SemSig v1, SemSig v2);
-	double compare(LinkedHashMap<Integer,Float> v1, LinkedHashMap<Integer,Float> v2);
+	double compare(SemSig v1, SemSig v2, boolean sortedNormalized);
+	double compare(LinkedHashMap<Integer,Float> v1, LinkedHashMap<Integer,Float> v2, boolean sortedNormalized);
 }
