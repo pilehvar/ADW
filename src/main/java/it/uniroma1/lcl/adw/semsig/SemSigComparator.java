@@ -60,21 +60,15 @@ public class SemSigComparator
 		int v2Size = vec2.size();
 		
 		if(size != 0 && size < v1Size)
-		{
-			vec1 = SemSigUtils.truncateSemSig(vec1, size);
-			vec1 = SemSigUtils.normalizeSemSigs(vec1);
-		}
+			vec1 = SemSigUtils.truncateVector(vec1, size, true);
 		
 		if(size != 0 && size < v2Size)
-		{
-			vec2 = SemSigUtils.truncateSemSig(vec2, size);
-			vec2 = SemSigUtils.normalizeSemSigs(vec2);
-		}
+			vec2 = SemSigUtils.truncateVector(vec2, size, true);
 		
 		if(!normalized)
 		{
-			vec1 = SemSigUtils.normalizeSemSigs(vec1);
-			vec2 = SemSigUtils.normalizeSemSigs(vec2);
+			vec1 = new LinkedHashMap<Integer,Float>(SemSigUtils.normalizeVector(vec1));
+			vec2 = new LinkedHashMap<Integer,Float>(SemSigUtils.normalizeVector(vec2));
 		}
 		
 		//The vector should be normalized here, sorting is done within the compare implementation
