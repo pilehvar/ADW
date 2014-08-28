@@ -45,7 +45,7 @@ public class TextualSimilarity
 {
 	private static final Log log = LogFactory.getLog(TextualSimilarity.class);
 	
-	static private TextualSimilarity instance;
+	private static TextualSimilarity instance;
 	
 	private static List<Character> TAGS = Arrays.asList(new Character[]{'V','R','J','N'});
 	
@@ -53,7 +53,7 @@ public class TextualSimilarity
 	
 	private static boolean discardStopwords = ADWConfiguration.getInstance().getDiscardStopwordsCondition();
 	
-	private EnglishLemmatizer el = null;
+	private static EnglishLemmatizer el = null;
 	
 	public TextualSimilarity()
 	{
@@ -256,7 +256,7 @@ public class TextualSimilarity
 	 * 
 	 * @param inSentence
 	 * @param discardStopwords
-	 * @return Pair<List of cooked sentences, List of non-formatted remainings (non-wordnet words)>
+	 * @return Pair<List of cooked sentences, List of non-formatted remaining (non-wordnet words)>
 	 */
 	public Pair<List<String>,List<String>> cookSentence(String inSentence)
 	{
@@ -304,6 +304,11 @@ public class TextualSimilarity
 		return null;
 	}
 	
+	/**
+	 * Strips the sentence from pos tags attached to words
+	 * @param ins
+	 * @return
+	 */
 	public List<String> stripSentence(List<String> ins)
 	{
 		List<String> stripped = new ArrayList<String>();
@@ -413,43 +418,6 @@ public class TextualSimilarity
 		
 	}
 	
-	public Set<String> getWordNetOffsets(String wordPos)
-	{
-		Set<String> offsets = new HashSet<String>();
-
-		wordPos = wordPos.trim();
-		
-		if(wordPos.matches("[0-9]*-[nrva]"))
-		{
-			offsets.add(wordPos);
-		}
-		else
-		{
-			String comps[] = wordPos.split("#");
-			
-			if(comps.length != 2)
-			{
-				log.error("mal-formatted word-pos: "+wordPos);
-				return null;
-			}
-			
-			String word = comps[0];
-			POS pos = GeneralUtils.getTagfromTag(comps[1]);
-			
-			List<IWord> senses = WordNet.getInstance().getSenses(word, pos);
-			
-			if(senses == null)
-				return null;
-			
-			for(IWord sense : senses)
-			{
-				offsets.add(GeneralUtils.fixOffset(sense.getSynset().getOffset(), pos));
-			}
-		}
-		
-		return offsets;
-	}
-	
 	/**
 	 * 
 	 * @param firstSenses
@@ -467,7 +435,7 @@ public class TextualSimilarity
 	 * @return
 	 * 			a LinkedHashMap of disambiguated src sense and the aligned target sense, as well as their similarity score 
 	 */
-	public LinkedHashMap<Pair<SemSig,SemSig>,Double> semanticAlignerBySense(
+	public LinkedHashMap<Pair<SemSig,SemSig>,Double> alignmentBasedDisambiguation(
 			List<List<SemSig>> firstSenses, 
 			Set<SemSig> secondSenses, 
 			SignatureComparison measure, 
