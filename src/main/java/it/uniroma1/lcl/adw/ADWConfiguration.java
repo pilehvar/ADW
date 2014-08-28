@@ -17,7 +17,7 @@ public class ADWConfiguration
 
 	static private ADWConfiguration instance = null;
 	static private String CONFIG_DIR = "config/";
-	static public String CONFIG_FILE = "adw.properties";
+	static private String CONFIG_FILE = "adw.properties";
 
 	/**
 	 * Private constructor. By default loads config/knowledge.properties
@@ -76,16 +76,6 @@ public class ADWConfiguration
 		}
 	}
 	
-	public int getTotalFolds()
-	{
-		return config.getInt("total.folds");
-	}
-	
-	public int getFoldNumber()
-	{
-		return config.getInt("fold.number");
-	}
-	
 	public String getPPVPath()
 	{
 		return getPPVPath(LKB.WordNet);
@@ -122,33 +112,12 @@ public class ADWConfiguration
 	}
 	
 	
-	public String getStaticPPVPath(LKB lkb)
-	{
-		switch (lkb)
-		{
-			case WordNet:
-				return config.getString("wordnet.static.ppv.path");
-				
-			case WordNetGloss:
-				return config.getString("wn30g.static.ppv.path");
-				
-		}
-		
-		return null;
-	}
-	
-	
 	public String getWordPPVPath(LKB lkb)
 	{
 		switch (lkb)
 		{
-			case WordNet:
-				return config.getString("wordnet.single.ppv.path");
-				
 			case WordNetGloss:
-				return config.getString("wn30g.single.ppv.path");
-				
-				
+				return config.getString("wn30g.word.ppv.path");
 		}
 		
 		return null;
@@ -180,72 +149,6 @@ public class ADWConfiguration
 		return config.getString("offset.map.file");
 	}
 	
-	public String getBINPath(LKB lkb)
-	{
-		switch (lkb)
-		{
-			case WordNet:
-				return config.getString("wordnet.bin.path");
-				
-			case WordNetGloss:
-				return config.getString("wn30g.bin.path");
-				
-		}
-		
-		return null;
-	}
-	
-	public String getIndexPath(LKB lkb)
-	{
-		switch (lkb)
-		{
-			case WordNet:
-				return config.getString("wordnet.index");
-				
-			case WordNetGloss:
-				return config.getString("wn30g.index");
-				
-		}
-		
-		return null;
-	}
-
-	public String getSTSTrainPath()
-	{
-		return config.getString("STS.train.path");
-	}
-	
-	public String getFeaturesBasePath()
-	{
-		return config.getString("features.base.path");
-	}
-	
-	public String getSTSTestPath()
-	{
-		return config.getString("STS.test.path");
-	}
-	
-	public String getSTSMixPath()
-	{
-		return config.getString("STS.mix.path");
-	}
-	
-	public String getMixedFeaturesPath()
-	{
-		return getFeaturesBasePath() + "mix/";
-	}
-
-	
-	public String getWorkingDirectory() 
-	{
-		return config.getString("workingDirectory");
-	}
-
-	public int getGeneratedVectorSize() 
-	{
-		return config.getInt("generatedVectorSize");
-	}
-
 	public int getTestVectorSize() 
 	{
 		return config.getInt("testedVectorSize");
@@ -260,7 +163,16 @@ public class ADWConfiguration
 	{
 		return config.getString("alignmentSimMeasure");
 	}
-
+	
+	public boolean getDiscardStopwordsCondition() 
+	{
+		return  Boolean.valueOf(config.getString("discardStopWords"));
+	}
+	
+	public boolean getMirrorPOSTaggingCondition() 
+	{
+		return  Boolean.valueOf(config.getString("discardStopWords"));
+	}
 	
 	public static <T extends Enum<T>> T getEnumFromString(Class<T> c, String string)
 	{
