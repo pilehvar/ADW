@@ -7,15 +7,19 @@ import java.util.LinkedHashMap;
 public class JensenShannon implements SignatureComparison
 {
 
-	public double compare(SemSig v1, SemSig v2) 
+	public double compare(SemSig v1, SemSig v2, boolean sorted) 
 	{
-		return compare(v1.getVector(),v2.getVector());
+		return compare(v1.getVector(),v2.getVector(), sorted);
 	}
 
 	public double compare(
 			LinkedHashMap<Integer, Float> v1,
-			LinkedHashMap<Integer, Float> v2) 
+			LinkedHashMap<Integer, Float> v2,
+			boolean sorted) 
 	{
+		
+		//it does not matter if vectors are sorted or not
+		
 		double JS = 0.0;
 		
 		if(v1.keySet().size() == 0 || v2.keySet().size() == 0)
