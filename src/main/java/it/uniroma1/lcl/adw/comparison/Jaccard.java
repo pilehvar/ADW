@@ -1,6 +1,7 @@
 package it.uniroma1.lcl.adw.comparison;
 
 import it.uniroma1.lcl.adw.semsig.SemSig;
+import it.uniroma1.lcl.adw.utils.SemSigUtils;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -16,16 +17,22 @@ import java.util.Set;
  */
 public class Jaccard implements SignatureComparison 
 {
-	public double compare(SemSig v1, SemSig v2) 
+	public double compare(SemSig v1, SemSig v2, boolean sorted) 
 	{
-		return compare(v1.getVector(),v2.getVector());
+		return compare(v1.getVector(),v2.getVector(),sorted);
 	}
 
 	public double compare(
 			LinkedHashMap<Integer, Float> v1,
-			LinkedHashMap<Integer, Float> v2) 
+			LinkedHashMap<Integer, Float> v2,
+			boolean sorted) 
 	{
-
+		if(!sorted)   
+		{
+			v1 = SemSigUtils.sortSemSig(v1);
+			v2 = SemSigUtils.sortSemSig(v2);
+		}
+		
 		double overlaps = 0;
 		List<Integer> v1Keys = new ArrayList<Integer>(v1.keySet());
 		
