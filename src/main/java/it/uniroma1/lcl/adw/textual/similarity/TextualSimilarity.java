@@ -1,5 +1,6 @@
 package it.uniroma1.lcl.adw.textual.similarity;
 
+import it.uniroma1.lcl.adw.ADWConfiguration;
 import it.uniroma1.lcl.adw.LexicalItemType;
 import it.uniroma1.lcl.adw.comparison.SignatureComparison;
 import it.uniroma1.lcl.adw.semsig.LKB;
@@ -17,7 +18,6 @@ import it.uniroma1.lcl.jlt.util.Pair;
 import it.uniroma1.lcl.jlt.util.Stopwords;
 import it.uniroma1.lcl.jlt.util.Strings;
 import it.uniroma1.lcl.jlt.wordnet.WordNet;
-import it.uniroma1.lcl.jlt.wordnet.WordNetVersion;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -46,30 +46,36 @@ public class TextualSimilarity
 	private static final Log log = LogFactory.getLog(TextualSimilarity.class);
 	
 	static private TextualSimilarity instance;
-	WordNetVersion wnv;
 	
-	List<Character> TAGS = Arrays.asList(new Character[]{'V','R','J','N'});
+	private static List<Character> TAGS = Arrays.asList(new Character[]{'V','R','J','N'});
 	
-	static MultiHashMap<String,String> allWordNetEntries = new MultiHashMap<String,String>();
+	private static MultiHashMap<String,String> allWordNetEntries = null;
 	
+	private static boolean discardStopwords = ADWConfiguration.getInstance().getDiscardStopwordsCondition();
 	
-	static WordNet WN = WordNet.getInstance();
-	EnglishLemmatizer el = null;
+	private EnglishLemmatizer el = null;
 	
 	public TextualSimilarity()
 	{
-		wnv = WordNetVersion.WN_30;
+		if(allWordNetEntries == null)
+		{
+			allWordNetEntries = new MultiHashMap<String,String>();
 		
-		for(String tag : Arrays.asList("n","v","r","a"))
-			allWordNetEntries.putAll(tag, WordNet.getInstance().getAllWords(GeneralUtils.getTagfromTag(tag)));	
-	
-		try
-		{
-			el = new EnglishLemmatizer();	
+			for(String tag : Arrays.asList("n","v","r","a"))
+				allWordNetEntries.putAll(tag, WordNet.getInstance().getAllWords(GeneralUtils.getTagfromTag(tag)));	
+		
 		}
-		catch(Exception e)
+		
+		if(el == null)
 		{
-			e.printStackTrace();
+			try
+			{
+				el = new EnglishLemmatizer();	
+			}
+			catch(Exception e)
+			{
+				e.printStackTrace();
+			}
 		}
 		
 	}
@@ -102,7 +108,7 @@ public class TextualSimilarity
 	 * 		a pair containing <list of word-pos, remaining not-handled terms>  
 	 * 		
 	 */
-	public Pair<List<String>, List<String>> getStanfordSentence(String sentence, boolean discardStopWords)
+	public Pair<List<String>, List<String>> getStanfordSentence(String sentence)
 	{
 		List<WordLemmaTag> wlts = DataProcessor.getInstance().processSentence(sentence, false);
 		
@@ -123,8 +129,8 @@ public class TextualSimilarity
 			e.printStackTrace();
 		}
 
-		//discards OOVs, and tried to map incorrect pos-tags to the correct ones
-		return fixTerms(terms, discardStopWords);
+		//discards OOVs, and tries to map incorrect pos-tags to the correct ones
+		return fixTerms(terms, discardStopwords);
 	}
 	
 	/**
@@ -252,12 +258,12 @@ public class TextualSimilarity
 	 * @param discardStopwords
 	 * @return Pair<List of cooked sentences, List of non-formatted remainings (non-wordnet words)>
 	 */
-	public Pair<List<String>,List<String>> cookSentence(String inSentence, boolean discardStopwods)
+	public Pair<List<String>,List<String>> cookSentence(String inSentence)
 	{
 		try
 		{
 			
-			Pair<List<String>, List<String>> sent = getStanfordSentence(inSentence, discardStopwods);
+			Pair<List<String>, List<String>> sent = getStanfordSentence(inSentence);
 			
 			List<String> sentence = sent.getFirst();
 			List<String> remainings = sent.getSecond();
@@ -312,9 +318,6 @@ public class TextualSimilarity
 	}
 	
 	
-	//TODO continue deleting here and fixing the preprocess, make the functions to average the vectors
-	//make eveything ready just the database part!
-	
 	/**
 	 * gets the average vector of words in a sentence
 	 * @param sentence
@@ -323,12 +326,8 @@ public class TextualSimilarity
 	 * @param babelnet
 	 * @return
 	 */
-	public List<List<SemSig>> getSenseVectorsFromCookedSentence(List<String> words, LKB lkb)
+	public List<List<SemSig>> getSenseVectorsFromCookedSentence(List<String> words, LKB lkb, int vectorSize)
 	{
-		/*
-		 * Disk-based retrieval 
-		 */
-		
 		List<List<SemSig>> vectors = new ArrayList<List<SemSig>>();
 		
 		for(String w : words)
@@ -336,22 +335,18 @@ public class TextualSimilarity
 			String word = w.split("#")[0];
 			String tag = w.split("#")[1];
 			
-			SemSig v = null;
-			
 			List<SemSig> thisVectors = new ArrayList<SemSig>();
 			
 			//if it is a synset offset
 			if(w.matches("[0-9]*-[arvn]"))
 			{
-				v = SemSigProcess.getInstance().getSemSigFromOffset(word, lkb, 0);
+				thisVectors.add(SemSigProcess.getInstance().getSemSigFromOffset(word, lkb, vectorSize));
 			}
 			else
 			{
 				for(IWord sense : WordNet.getInstance().getSenses(word, GeneralUtils.getTagfromTag(tag)))
 				{
-					v = SemSigProcess.getInstance().getSemSigFromIWord(sense, lkb, 0);
-					
-					thisVectors.add(v);
+					thisVectors.add(SemSigProcess.getInstance().getSemSigFromIWord(sense, lkb, vectorSize));
 				}
 			}
 			
@@ -360,42 +355,16 @@ public class TextualSimilarity
 		
 		return vectors;
 		
-		
-		
-		/*
-		 * Index-based retrieval
-		 */
-		/*
-		IndexVectoring IV = new IndexVectoring(lkb);
-		
-		List<List<SemSig>> vectors = new ArrayList<List<SemSig>>();
-		
-		for(String w : words)
-		{
-			String word = w.split("#")[0];
-			String tag = w.split("#")[1];
-			
-			List<SemSig> thisVectors = new ArrayList<SemSig>();
-			for(IWord sense : WordNet.getInstance().getSenses(word,general.getPOSfromString(tag)))
-				thisVectors.add(IV.getVectorFromIWord(sense));
-			
-			vectors.add(thisVectors);
-		}
-		
-		return vectors;
-		
-		*/
-		
 	}
 	
 	
-	public List<SemSig> getSenseVectorsFromOffsetSentence(List<String> offsets, LexicalItemType type, LKB lkb)
+	public List<SemSig> getSenseVectorsFromOffsetSentence(List<String> offsets, LexicalItemType type, LKB lkb, int vecSize)
 	{
 		List<SemSig> vectors = new ArrayList<SemSig>();
 
 		for(String offset : offsets)
 		{
-			SemSig v = SemSigProcess.getInstance().getSemSigFromOffset(offset, lkb, 0);
+			SemSig v = SemSigProcess.getInstance().getSemSigFromOffset(offset, lkb, vecSize);
 				
 			vectors.add(v);
 		}
@@ -484,9 +453,11 @@ public class TextualSimilarity
 	/**
 	 * 
 	 * @param firstSenses
-	 * 			list of list of all the senses of the words in the first sentence
+	 * 			list of list of all the senses of the words in the first sentence,
+	 * 			assumes the {@link SemSig}} to be sorted and normalized
 	 * @param secondSenses
 	 * 			the set of all senses of the words in the second sentence
+	 * 			assumes the {@link SemSig}} to be sorted and normalized
 	 * @param vectorSize
 	 * 			the alignment measure
 	 * @param mirror
@@ -496,7 +467,7 @@ public class TextualSimilarity
 	 * @return
 	 * 			a LinkedHashMap of disambiguated src sense and the aligned target sense, as well as their similarity score 
 	 */
-	public static LinkedHashMap<Pair<SemSig,SemSig>,Double> semanticAlignerBySense(
+	public LinkedHashMap<Pair<SemSig,SemSig>,Double> semanticAlignerBySense(
 			List<List<SemSig>> firstSenses, 
 			Set<SemSig> secondSenses, 
 			SignatureComparison measure, 
@@ -552,15 +523,7 @@ public class TextualSimilarity
 						//if maximum has already been reached, no need to further investigate
 						if(maxSimilarity == 1) continue;
 						
-						//System.out.println("[working on "+ aFSense.getOffset() + " and "+ secondSense.getOffset()+"]");
-						
-						//getting vectors from index, they are already sorted
-						//double thisSimilarity = VectorComparator.compare(aFSense.getVector(), secondSense.getVector(), vectorSize, measure, true);
-						
-						//if(counter++ %1000==0)
-							//System.out.println("comparing "+aFSense.getOffset()+" and "+secondSense.getOffset() +"\t"+ counter);
-						
-						double thisSimilarity = SemSigComparator.compare(aFSense, secondSense, measure, vectorSize);
+						double thisSimilarity = SemSigComparator.compare(aFSense, secondSense, measure, vectorSize, true, true);
 						
 						if(thisSimilarity > maxSimilarity)
 						{
@@ -606,9 +569,9 @@ public class TextualSimilarity
 		
 		System.out.println(TS.getStanfordSentence(
 				"Slovakia has not been condemned to the second division and it is logical that it should like to join together with the Czech Republic."
-				, true).getFirst());
+				).getFirst());
 				
-		System.out.println(TS.cookSentence("Slovakia has not been condemned to the second division and it is logical that it should like to join together with the Czech Republic.", true));
+		System.out.println(TS.getSenseVectorsFromCookedSentence(TS.cookSentence("Slovakia has not been condemned to the second division and it is logical that it should like to join together with the Czech Republic.").getFirst(), LKB.WordNetGloss,0));
 		
 	}
 	

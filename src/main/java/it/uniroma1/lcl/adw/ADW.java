@@ -1,5 +1,8 @@
 package it.uniroma1.lcl.adw;
 
+import it.uniroma1.lcl.adw.comparison.Cosine;
+import it.uniroma1.lcl.adw.comparison.JensenShannon;
+import it.uniroma1.lcl.adw.comparison.KLDivergence;
 import it.uniroma1.lcl.adw.comparison.SignatureComparison;
 import it.uniroma1.lcl.adw.comparison.WeightedOverlap;
 import it.uniroma1.lcl.adw.semsig.LKB;
@@ -39,16 +42,17 @@ public class ADW
 	private static final Log log = LogFactory.getLog(ADW.class);
 	
 	static private ADW instance;
-	TextualSimilarity TS = TextualSimilarity.getInstance();
+	private TextualSimilarity TS = TextualSimilarity.getInstance();
 	
-	SignatureComparison alignmentMeasure;
-	int alignmentVecSize;
-	int generatedVectorSize;
-	String STSWorkingDirectory;
-	int testedVectorSize;
-	public static final WordNetVersion wordnetVersion = WordNetVersion.WN_30;
+	private SignatureComparison alignmentMeasure;
+	private int alignmentVecSize;
+	private int testedVectorSize;
+	private static final WordNetVersion wordnetVersion = WordNetVersion.WN_30;
+	private static boolean discardStopwords = ADWConfiguration.getInstance().getDiscardStopwordsCondition();
+	private static boolean mirrorPOStagging = ADWConfiguration.getInstance().getMirrorPOSTaggingCondition();
 	
-	Set<String> WordNetWords = null; 
+	long startTime;
+	long currentTime;
 	
 	public ADW()
 	{
@@ -99,9 +103,7 @@ public class ADW
 			LexicalItemType srcTextType,
 			LexicalItemType trgTextType)
 	{
-		boolean discardStopwords = true;
-		boolean mirrorPOStagging = true;
-		
+
 		if(!checkType(text1, srcTextType))
 		{
 			log.error("Invalid input type for "+ srcTextType +" and string \""+ text1 +"\"! Please check the input");
@@ -114,9 +116,17 @@ public class ADW
 			System.exit(0);
 		}
 	
+
+		startTime = System.currentTimeMillis();
+//		System.out.println(startTime+"\t"+"Started cooking the sentence!");
+		
 		//pre-process sentence pair
 		List<String> cookedSentence1 = cookLexicalItem(text1, srcTextType, discardStopwords).getFirst();
 		List<String> cookedSentence2 = cookLexicalItem(text2, trgTextType, discardStopwords).getFirst();
+		
+		currentTime = System.currentTimeMillis();
+		System.out.println((currentTime-startTime)+"\t"+"Done cooking the sentence!");
+		startTime = currentTime;
 		
 		//Mirror pos tagging
 		if(mirrorPOStagging && 
@@ -129,6 +139,10 @@ public class ADW
 			cookedSentence2 = aPair.getSecond();	
 		}
 		
+		currentTime = System.currentTimeMillis();
+		System.out.println((currentTime-startTime)+"\t"+"Done mirror POS tagging!");
+		startTime = currentTime;
+		
 		List<SemSig> srcSemSigs = new ArrayList<SemSig>();
 		List<SemSig> trgSemSigs = new ArrayList<SemSig>();
 		
@@ -136,8 +150,8 @@ public class ADW
 		{
 			case NONE:
 				//take all the synsets (or Semsigs to be consistent with others) of all the words in the two sides
-				srcSemSigs = SemSigProcess.getInstance().getAllOffsetsFromWordPosList(cookedSentence1, srcTextType);
-				trgSemSigs = SemSigProcess.getInstance().getAllOffsetsFromWordPosList(cookedSentence2, trgTextType);
+				srcSemSigs = SemSigProcess.getInstance().getAllSemSigsFromWordPosList(cookedSentence1, srcTextType, alignmentVecSize);
+				trgSemSigs = SemSigProcess.getInstance().getAllSemSigsFromWordPosList(cookedSentence2, trgTextType, alignmentVecSize);
 				break;
 				
 				//alignment-based disambiguation
@@ -155,11 +169,21 @@ public class ADW
 				
 		}
 			
-		//TODO: disambiguation does not need averaging
-		SemSig srcSemSig = SemSigUtils.averageSemSigs(srcSemSigs);
-		SemSig trgSemSig = SemSigUtils.averageSemSigs(trgSemSigs);
+		currentTime = System.currentTimeMillis();
+		System.out.println((currentTime-startTime)+"\t"+"Done reading vectors and disambiguation!");
+		startTime = currentTime;
 		
-		return SemSigComparator.compare(srcSemSig.getVector(), trgSemSig.getVector(), measure, testedVectorSize, false);
+		SemSig srcSemSig = (srcSemSigs.size() == 1)?
+				srcSemSigs.get(0) : SemSigUtils.averageSemSigs(srcSemSigs);
+		
+		SemSig trgSemSig = (trgSemSigs.size() == 1)?
+						trgSemSigs.get(0) : SemSigUtils.averageSemSigs(trgSemSigs);
+		
+		currentTime = System.currentTimeMillis();
+		System.out.println((currentTime-startTime)+"\t"+"Done averaging!");
+		startTime = currentTime;
+
+		return SemSigComparator.compare(srcSemSig.getVector(), trgSemSig.getVector(), measure, testedVectorSize, false, true);
 	}
 	
 	public Pair<List<String>,List<String>> mirrorPosTags(List<String> firstCookedSentence, List<String> secondCookedSentence) 
@@ -216,7 +240,7 @@ public class ADW
 					break;
 					
 				case SURFACE:
-					out = TS.cookSentence(text, discardStopwords);
+					out = TS.cookSentence(text);
 					cookedSentence = out.getFirst();	
 					
 					break;
@@ -305,6 +329,28 @@ public class ADW
 		return true;
 	}
 	
+	public List<List<SemSig>> convertToVectors(List<String> sentence, LexicalItemType type, LKB lkb, int vSize)
+	{
+		List<List<SemSig>> firstVectors = new ArrayList<List<SemSig>>();
+		Set<SemSig> firstVectorSet = new HashSet<SemSig>();
+		
+		if(type.equals(LexicalItemType.SENSE_OFFSETS) 
+				|| type.equals(LexicalItemType.SENSE_KEYS)
+				|| type.equals(LexicalItemType.WORD_SENSE))
+		{
+			firstVectorSet = new HashSet<SemSig>(TS.getSenseVectorsFromOffsetSentence(sentence, type, lkb, vSize));
+		
+			for(SemSig s : firstVectorSet)
+				firstVectors.add(Arrays.asList(s));				
+		}
+		else
+		{
+			firstVectors = TS.getSenseVectorsFromCookedSentence(sentence, lkb, vSize);
+		}
+		
+		return firstVectors;
+	}
+	
 	
 	public Pair<List<SemSig>,List<SemSig>> 
 	DisambiguateCookedSentence(
@@ -325,60 +371,23 @@ public class ADW
 			LinkedHashMap<Pair<SemSig,SemSig>,Double> alignments;
 			LinkedHashMap<Pair<SemSig,SemSig>,Double> alignmentsRev;
 			
-			List<List<SemSig>> firstVectors = new ArrayList<List<SemSig>>();
-			Set<SemSig> firstVectorSet = new HashSet<SemSig>();
-			
-			if(srcTextType.equals(LexicalItemType.SENSE_OFFSETS) 
-					|| srcTextType.equals(LexicalItemType.SENSE_KEYS)
-					|| srcTextType.equals(LexicalItemType.WORD_SENSE))
-			{
-				firstVectorSet = new HashSet<SemSig>(TS.getSenseVectorsFromOffsetSentence(cookedSentence1, srcTextType, lkb));
-			
-				for(SemSig s : firstVectorSet)
-					firstVectors.add(Arrays.asList(s));				
-			}
-			else
-			{
-				firstVectors = TS.getSenseVectorsFromCookedSentence(cookedSentence1, lkb);
-				firstVectorSet = convertToSet(firstVectors);
-			}
+			List<List<SemSig>> firstVectors = convertToVectors(cookedSentence1, srcTextType, lkb, vectorSize);
+			Set<SemSig> firstVectorSet = convertToSet(firstVectors);
+		
+			List<List<SemSig>> secondVectors = convertToVectors(cookedSentence2, trgTextType, lkb, vectorSize);
+			Set<SemSig> secondVectorSet = convertToSet(secondVectors);
 			
 			
-			List<List<SemSig>> secondVectors = new ArrayList<List<SemSig>>();
-			Set<SemSig> secondVectorSet = new HashSet<SemSig>();
-					
-			if(trgTextType.equals(LexicalItemType.SENSE_OFFSETS) 
-					|| trgTextType.equals(LexicalItemType.SENSE_KEYS)
-					|| trgTextType.equals(LexicalItemType.WORD_SENSE))
-			{
-				secondVectorSet = new HashSet<SemSig>(TS.getSenseVectorsFromOffsetSentence(cookedSentence2, trgTextType, lkb));
-				
-				for(SemSig s : secondVectorSet)
-					secondVectors.add(Arrays.asList(s));				
-			}
-			else
-			{
-				secondVectors = TS.getSenseVectorsFromCookedSentence(cookedSentence2, lkb);
-				secondVectorSet = convertToSet(secondVectors); 	
-			}
-			
-			
-			alignments = TextualSimilarity.semanticAlignerBySense(firstVectors, secondVectorSet, alignmentMeasure, alignmentVecSize, new HashSet<SemSig>());
+			alignments = TS.semanticAlignerBySense(firstVectors, secondVectorSet, alignmentMeasure, alignmentVecSize, new HashSet<SemSig>());
 			
 			//of there is any alignment with 1.0 score, make sure that the target is selected on the reverse disambiguation
 			Set<SemSig> toBeTakens = new HashSet<SemSig>();
 			for(Pair<SemSig,SemSig> sig : alignments.keySet())
-				if(alignments.get(sig) == 1)
+				if(Math.abs(alignments.get(sig) - 1) < 0.0001)
 					toBeTakens.add(sig.getSecond());
 			
-				
-			alignmentsRev = TextualSimilarity.semanticAlignerBySense(secondVectors, firstVectorSet, alignmentMeasure, alignmentVecSize, toBeTakens); 
+			alignmentsRev = TS.semanticAlignerBySense(secondVectors, firstVectorSet, alignmentMeasure, alignmentVecSize, toBeTakens); 
 
-			//To avoid non-identical disambiguation pairs in case of word pairs that share multiple sysnsets
-			//need to check if two synsets align with 1.0 score, they should be taken with priority
-			//TODO
-
-			
 			List<SemSig> srcSigs = new ArrayList<SemSig>();
 			List<SemSig> trgSigs = new ArrayList<SemSig>();
 			
@@ -435,7 +444,7 @@ public class ADW
         String text2 = "windmill#n rotate#v wind#n";
         LexicalItemType text2Type = LexicalItemType.SURFACE_TAGGED;
         
-        String text3 = "windmill.n.1";
+        String text3 = "windmill.n.1";	//or windmill#n#1
         LexicalItemType text3Type = LexicalItemType.WORD_SENSE;
         
         String text4 = "windmill%1:06:01::";
@@ -500,7 +509,29 @@ public class ADW
 	//TODO: automatic detection of text types
 	public static void main(String args[])
 	{
-		demo();
+//		demo();
+		
+        ADW pipeLine = new ADW();
+
+        String text1 = "get#v";
+        LexicalItemType text1Type = LexicalItemType.SURFACE_TAGGED;
+        
+        String text2 = "have#v";
+        LexicalItemType text2Type = LexicalItemType.SURFACE_TAGGED;
+        
+        //if lexical items has to be disambiguated
+        DisambiguationMethod disMethod = DisambiguationMethod.NONE;
+        
+        //measure for comparing semantic signatures
+        SignatureComparison measure = new WeightedOverlap(); 
+
+        double score1 = pipeLine.getPairSimilarity(
+                text1, text2,
+                disMethod, 
+                measure,
+                text1Type, text2Type);
+        System.out.println(score1+"\t"+text1+"\t"+text2);
+        
 	}
 
 

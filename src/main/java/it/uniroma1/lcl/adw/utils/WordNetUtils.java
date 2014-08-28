@@ -14,8 +14,8 @@ import edu.mit.jwi.item.POS;
 
 public class WordNetUtils
 {
-	static final Pattern wordSenseFormat = Pattern.compile("([^ ]*)\\.([anvr])\\.(\\d+)");
-	static WordNetVersion wnv = WordNetVersion.WN_30;
+	private static final Pattern wordSenseFormat = Pattern.compile("([^ ]*)[\\.#]([anvr])[\\.#](\\d+)");
+	private static WordNetVersion wnv = WordNetVersion.WN_30;
 	
 	public static String mapIWordToReadableForm(WordNetVersion wnv, IWord word)
 	{

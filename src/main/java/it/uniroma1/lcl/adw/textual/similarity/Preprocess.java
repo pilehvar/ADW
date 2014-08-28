@@ -28,7 +28,7 @@ import edu.stanford.nlp.ling.WordLemmaTag;
  */
 public class Preprocess 
 {
-	static Set<String> allWNWords = null;
+	static private Set<String> allWNWords = null;
 	
 	
 	/**
@@ -82,8 +82,8 @@ public class Preprocess
 		for(Pair<String,String> aPair : pairs)
 		{
 			//System.out.println("[working on "+ index++ +"]");
-			List<String> sentA = TS.cookSentence(aPair.getFirst(), true).getFirst();
-			List<String> sentB = TS.cookSentence(aPair.getSecond(), true).getFirst();
+			List<String> sentA = TS.cookSentence(aPair.getFirst()).getFirst();
+			List<String> sentB = TS.cookSentence(aPair.getSecond()).getFirst();
 			
 			//System.out.println(sentA+"\t"+sentB);
 			
@@ -451,7 +451,7 @@ public class Preprocess
 			
 		TextualSimilarity TS = new TextualSimilarity();
 		
-		System.out.println(TS.cookSentence("an approximated amount of something", true));
+		System.out.println(TS.cookSentence("an approximated amount of something"));
 		
 	}
 }

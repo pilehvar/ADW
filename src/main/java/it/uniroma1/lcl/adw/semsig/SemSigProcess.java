@@ -29,11 +29,13 @@ import edu.mit.jwi.item.POS;
  */
 public class SemSigProcess 
 {
-	static final int MAX_VECTOR_SIZE = 120000;
+	static private final int MAX_VECTOR_SIZE = 120000;
 	static private SemSigProcess instance;
 	
 	private static final Log log = LogFactory.getLog(SemSigProcess.class);
-	public static HashMap<String,String> IDtoOffsetMap = null;
+//	public static HashMap<String,String> IDtoOffsetMap = null;
+	private HashMap<LKB,String> basePathMap = new HashMap<LKB,String>();
+	private HashMap<LKB,String> wordBasePathMap = null;
 	
 	/**
 	 * Used to access {@link SemSigProcess}
@@ -55,9 +57,25 @@ public class SemSigProcess
 	
 	private SemSigProcess()
 	{
-		IDtoOffsetMap = GeneralUtils.getIDtoOffsetMap();
+//		IDtoOffsetMap = GeneralUtils.getIDtoOffsetMap();
+		
+		if(wordBasePathMap == null)
+		{
+			wordBasePathMap = new HashMap<LKB,String>();
+
+			String path = ADWConfiguration.getInstance().getWordPPVPath(LKB.WordNetGloss);
+			if(new File(path).exists())
+				wordBasePathMap.put(LKB.WordNetGloss, path);
+		}
 	}
 	
+	public boolean wordVectorsExist(LKB lkb)
+	{
+		if(wordBasePathMap.containsKey(lkb))
+			return true;
+		else
+			return false;
+	}
 	
 	public SemSig getCustomSemSigFromCompressed(String path, int size)
 	{
@@ -171,9 +189,10 @@ public class SemSigProcess
 		return vectors;
 	}
 	
-	public List<SemSig> getAllOffsetsFromWordPosList(
+	public List<SemSig> getAllSemSigsFromWordPosList(
 			List<String> wordPosList,
-			LexicalItemType srcTextType) 
+			LexicalItemType srcTextType,
+			int alignmentVecSize) 
 			{
 		
 		List<SemSig> allSemSigs = new ArrayList<SemSig>();
@@ -182,31 +201,32 @@ public class SemSigProcess
 		{
 			case SENSE_OFFSETS:
 				for(String offset : wordPosList)
-					allSemSigs.add(getSemSigFromOffset(offset, LKB.WordNetGloss, 0, true));
+					allSemSigs.add(getSemSigFromOffset(offset, LKB.WordNetGloss, alignmentVecSize, true));
 				
 				break;
 				
 			case WORD_SENSE:
 				for(String offset : wordPosList)
-					allSemSigs.add(getSemSigFromOffset(offset, LKB.WordNetGloss, 0, true));
+					allSemSigs.add(getSemSigFromOffset(offset, LKB.WordNetGloss, alignmentVecSize, true));
 				
 				break;
 				
 			case SENSE_KEYS:
 				for(String offset : wordPosList)
-					allSemSigs.add(getSemSigFromOffset(offset, LKB.WordNetGloss, 0, true));
+					allSemSigs.add(getSemSigFromOffset(offset, LKB.WordNetGloss, alignmentVecSize, true));
 				
 				break;
 				
 			case SURFACE_TAGGED:
 				for(String wordPos : wordPosList)
-					allSemSigs.addAll(getWordPosSemSigs(wordPos, LKB.WordNetGloss, 0, true));
+					allSemSigs.addAll(getWordPosSemSigs(wordPos, LKB.WordNetGloss, alignmentVecSize, true));
 				
 				break;
 				
 			case SURFACE:
+				//even in this case the sentence has already been POS tagged
 				for(String wordPos : wordPosList)
-					allSemSigs.addAll(getWordPosSemSigs(wordPos, LKB.WordNetGloss, 0, true));
+					allSemSigs.addAll(getWordPosSemSigs(wordPos, LKB.WordNetGloss, alignmentVecSize, true));
 				
 				break;
 				
@@ -262,6 +282,15 @@ public class SemSigProcess
 		
 		POS tg = GeneralUtils.getTagfromTag(tag);
 		
+		//if there exists vectors for words
+		if(SemSigProcess.getInstance().wordVectorsExist(lkb))
+		{
+			List<SemSig> vector = new ArrayList<SemSig>();
+			vector.add(SemSigProcess.getInstance().getSemSigFromWord(word, tag, lkb, size));
+			
+			return vector;
+		}
+		
 		return getWordSemSigs(word, tg, lkb, size, warnings);
 	}
 	
@@ -290,8 +319,39 @@ public class SemSigProcess
 	
 	public SemSig getSemSigFromOffset(String offset, LKB lkb, int size, LKB normalizationLKB)
 	{
-		String basePath = ADWConfiguration.getInstance().getPPVPath(lkb);
+		if(!basePathMap.containsKey(lkb))
+			basePathMap.put(lkb, ADWConfiguration.getInstance().getPPVPath(lkb));
+		
+		String basePath = basePathMap.get(lkb);
 		String path = basePath+getSubdirectory(offset)+offset+".ppv";
+		
+		return getCustomSemSigFromCompressed(path, size, true, normalizationLKB);
+	}
+	
+	public SemSig getSemSigFromWord(String word, POS tag, LKB lkb, int size)
+	{
+		return getSemSigFromWord(word, tag, lkb, size, null);
+	}
+	
+	public SemSig getSemSigFromWord(String word, POS tag, LKB lkb, int size, LKB normalizationLKB)
+	{
+		String tg = Character.toString(GeneralUtils.getTagfromTag(tag));
+		
+		return getSemSigFromWord(word, tg, lkb, size, normalizationLKB);
+	}
+	
+	public SemSig getSemSigFromWord(String word, String tag, LKB lkb, int size)
+	{
+		return getSemSigFromWord(word, tag, lkb, size, null);
+	}
+	
+	public SemSig getSemSigFromWord(String word, String tag, LKB lkb, int size, LKB normalizationLKB)
+	{
+		if(!wordBasePathMap.containsKey(lkb))
+			wordBasePathMap.put(lkb, ADWConfiguration.getInstance().getWordPPVPath(lkb));
+		
+		String basePath = wordBasePathMap.get(lkb);
+		String path = basePath+word.substring(0,1)+"/"+word+"."+tag+".ppv";
 		
 		return getCustomSemSigFromCompressed(path, size, true, normalizationLKB);
 	}
@@ -318,11 +378,13 @@ public class SemSigProcess
 	
 	public static void main(String args[])
 	{
-		SemSig v1 = SemSigProcess.getInstance().getSemSigFromWordSense("gem.n.3", LKB.WordNetGloss, 0);
-		SemSig v2 = SemSigProcess.getInstance().getSemSigFromWordSense("jewel.n.2", LKB.WordNetGloss, 0);
+//		SemSig v1 = SemSigProcess.getInstance().getSemSigFromWordSense("gem.n.3", LKB.WordNetGloss, 0);
+//		SemSig v2 = SemSigProcess.getInstance().getSemSigFromWordSense("jewel.n.2", LKB.WordNetGloss, 0);
 
 		
-		double sim = SemSigComparator.compare(v1, v2, new WeightedOverlap(), 0);
-		System.out.println(sim);
+//		double sim = SemSigComparator.compare(v1, v2, new WeightedOverlap(), 0, true, true);
+//		System.out.println(sim);
+		
+		System.out.println(SemSigProcess.getInstance().getSemSigFromWord("monkey", POS.NOUN, LKB.WordNetGloss, 0, null));
 	}
 }
