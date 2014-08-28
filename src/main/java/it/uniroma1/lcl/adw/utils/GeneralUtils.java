@@ -45,6 +45,11 @@ public class GeneralUtils
 		}
 	}
 	
+	/**
+	 * converts string to {@link POS}
+	 * @param tag
+	 * @return
+	 */
 	public static POS getTagfromTag(String tag)
 	{
 		if(tag.toLowerCase().startsWith("n"))
@@ -112,40 +117,6 @@ public class GeneralUtils
 		return offset;
 	}
 	
-	/**
-	 * Normalizes the probability values in a vector so that to sum to 1.0
-	 * @param vector
-	 * @return
-	 */
-	public static Map<Integer,Float> normalizeVector(Map<Integer,Float> vector)
-	{
-		float total = 0;
-		
-		for(int s : vector.keySet())
-			total += vector.get(s);
-		
-		Map<Integer,Float> normalizedVector = new HashMap<Integer,Float>();
-		
-		for(int s : vector.keySet())
-			normalizedVector.put(s, vector.get(s)/total);
-		
-		return normalizedVector;
-	}
-	
-	
-	public static LinkedHashMap<Integer,Float> normalizeVector(LinkedHashMap<Integer,Float> vector)
-	{
-		float total = 0;
-		for(int s : vector.keySet())
-			total += vector.get(s);
-		
-		LinkedHashMap<Integer,Float> normalizedVector = new LinkedHashMap<Integer,Float>();
-		
-		for(int s : vector.keySet())
-			normalizedVector.put(s, vector.get(s)/total);
-		
-		return normalizedVector;
-	}
 	
 	/**
 	 * return short (single letter) form of the tag, covers only nouns, verbs, adjectives, and adverbs 
@@ -171,53 +142,6 @@ public class GeneralUtils
 			return null;
 	}
 	
-	/**
-	 * Truncates a vector to the top-n elements
-	 * @param vector
-	 * @param size
-	 * @param normalize
-	 * @return truncated vector
-	 */
-	public static LinkedHashMap<Integer,Float> truncateVector(Map<Integer,Float> vector, int size, boolean normalize)
-	{
-		LinkedHashMap<Integer,Float> sortedMap = new LinkedHashMap<Integer,Float>();
-		
-		int i = 0;
-		for(int key : Maps.sortByValue(vector, SortingOrder.DESCENDING).keySet())
-		{
-			sortedMap.put(key, vector.get(key));
-			
-			if(i++ >= size) break;
-		}
-		
-		if(normalize)
-		{
-			sortedMap = normalizeVector(sortedMap);
-		}
-		
-		return sortedMap;
-	}
-	
-	/**
-	 * Truncates a vector to the top-n elements (assumes that the input vector is already sorted)
-	 * @param vector
-	 * @param size
-	 * @param normalize
-	 * @return truncated vector
-	 */
-	public static LinkedHashMap<Integer,Float> truncateSortedVector(LinkedHashMap<Integer,Float> vector, int size)
-	{
-		LinkedHashMap<Integer,Float> sortedMap = new LinkedHashMap<Integer,Float>();
-		
-		int i = 1;
-		for(int key : vector.keySet())
-		{
-			sortedMap.put(key, vector.get(key));
-			if(i++ > size) break;
-		}
-		
-		return normalizeVector(sortedMap);
-	}
 	
 	/**
 	 * Obtains the list of all offsets for all senses of all parts of speech of an input term 
