@@ -2,6 +2,7 @@ package it.uniroma1.lcl.adw.comparison;
 
 import it.uniroma1.lcl.adw.semsig.SemSig;
 import it.uniroma1.lcl.adw.semsig.SemSigComparator;
+import it.uniroma1.lcl.adw.utils.SemSigUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,15 +24,23 @@ import java.util.List;
  */
 public class WeightedOverlap implements SignatureComparison
 {
-	public double compare(SemSig v1, SemSig v2) 
+	public double compare(SemSig v1, SemSig v2, boolean sortedNormalized) 
 	{
-		return compare(v1.getVector(),v2.getVector());
+		return compare(v1.getVector(),v2.getVector(),sortedNormalized);
 	}
 
 	public double compare(
 			LinkedHashMap<Integer, Float> v1,
-			LinkedHashMap<Integer, Float> v2) 
+			LinkedHashMap<Integer, Float> v2,
+			boolean sorted) 
 	{
+		
+		if(!sorted)   
+		{
+			v1 = SemSigUtils.sortSemSig(v1);
+			v2 = SemSigUtils.sortSemSig(v2);
+		}
+		
 		List<Integer> v2Keys = new ArrayList<Integer>(v2.keySet());
 		List<Integer> v1Keys = new ArrayList<Integer>(v1.keySet());
 		
@@ -39,7 +48,7 @@ public class WeightedOverlap implements SignatureComparison
 	}
 	
 	public double compare(List<Integer> v1,
-							List<Integer> v2) 
+						  List<Integer> v2) 
 	{
 
 		double overlaps = 0;
@@ -51,7 +60,7 @@ public class WeightedOverlap implements SignatureComparison
 		
 		for(Integer s : v1)
 		{
-			//works only on the overlapping dimensions between v1 and v2
+			//works only on the overlapping dimensions of v1 and v2
 			if(v2.contains(s))
 			{
 				overlaps += 1.0/((index+1)+(map.get(s)+1));	
