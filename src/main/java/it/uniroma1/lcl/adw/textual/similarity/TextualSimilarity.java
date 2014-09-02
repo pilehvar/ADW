@@ -33,8 +33,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import edu.mit.jwi.item.IWord;
-import edu.mit.jwi.item.POS;
-import edu.stanford.nlp.ling.WordLemmaTag;
+import edu.stanford.nlp.ling.WordLemmaTag;;
 
 /**
  * a class for computing semantic similarity of a pair of lexical items
@@ -535,7 +534,7 @@ public class TextualSimilarity
 	{
 		TextualSimilarity TS = new TextualSimilarity();
 		
-		System.out.println(TS.getStanfordSentence(
+		log.info(TS.getStanfordSentence(
 				"Slovakia has not been condemned to the second division and it is logical that it should like to join together with the Czech Republic."
 				).getFirst());
 				
