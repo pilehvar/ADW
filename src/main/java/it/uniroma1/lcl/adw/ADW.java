@@ -51,9 +51,6 @@ public class ADW
 	private static boolean discardStopwords = ADWConfiguration.getInstance().getDiscardStopwordsCondition();
 	private static boolean mirrorPOStagging = ADWConfiguration.getInstance().getMirrorPOSTaggingCondition();
 	
-	long startTime;
-	long currentTime;
-	
 	public ADW()
 	{
 		//the signature comparison measure used during similarity-based disambiguation
@@ -117,16 +114,9 @@ public class ADW
 		}
 	
 
-		startTime = System.currentTimeMillis();
-//		System.out.println(startTime+"\t"+"Started cooking the sentence!");
-		
 		//pre-process sentence pair
 		List<String> cookedSentence1 = cookLexicalItem(text1, srcTextType, discardStopwords).getFirst();
 		List<String> cookedSentence2 = cookLexicalItem(text2, trgTextType, discardStopwords).getFirst();
-		
-		currentTime = System.currentTimeMillis();
-		System.out.println((currentTime-startTime)+"\t"+"Done cooking the sentence!");
-		startTime = currentTime;
 		
 		//Mirror pos tagging
 		if(mirrorPOStagging && 
@@ -138,10 +128,6 @@ public class ADW
 			cookedSentence1 = aPair.getFirst();
 			cookedSentence2 = aPair.getSecond();	
 		}
-		
-		currentTime = System.currentTimeMillis();
-		System.out.println((currentTime-startTime)+"\t"+"Done mirror POS tagging!");
-		startTime = currentTime;
 		
 		List<SemSig> srcSemSigs = new ArrayList<SemSig>();
 		List<SemSig> trgSemSigs = new ArrayList<SemSig>();
@@ -169,20 +155,12 @@ public class ADW
 				
 		}
 			
-		currentTime = System.currentTimeMillis();
-		System.out.println((currentTime-startTime)+"\t"+"Done reading vectors and disambiguation!");
-		startTime = currentTime;
-		
 		SemSig srcSemSig = (srcSemSigs.size() == 1)?
 				srcSemSigs.get(0) : SemSigUtils.averageSemSigs(srcSemSigs);
 		
 		SemSig trgSemSig = (trgSemSigs.size() == 1)?
 						trgSemSigs.get(0) : SemSigUtils.averageSemSigs(trgSemSigs);
 		
-		currentTime = System.currentTimeMillis();
-		System.out.println((currentTime-startTime)+"\t"+"Done averaging!");
-		startTime = currentTime;
-
 		return SemSigComparator.compare(srcSemSig.getVector(), trgSemSig.getVector(), measure, testedVectorSize, false, true);
 	}
 	
@@ -378,7 +356,7 @@ public class ADW
 			Set<SemSig> secondVectorSet = convertToSet(secondVectors);
 			
 			
-			alignments = TS.semanticAlignerBySense(firstVectors, secondVectorSet, alignmentMeasure, alignmentVecSize, new HashSet<SemSig>());
+			alignments = TS.alignmentBasedDisambiguation(firstVectors, secondVectorSet, alignmentMeasure, alignmentVecSize, new HashSet<SemSig>());
 			
 			//of there is any alignment with 1.0 score, make sure that the target is selected on the reverse disambiguation
 			Set<SemSig> toBeTakens = new HashSet<SemSig>();
@@ -386,7 +364,7 @@ public class ADW
 				if(Math.abs(alignments.get(sig) - 1) < 0.0001)
 					toBeTakens.add(sig.getSecond());
 			
-			alignmentsRev = TS.semanticAlignerBySense(secondVectors, firstVectorSet, alignmentMeasure, alignmentVecSize, toBeTakens); 
+			alignmentsRev = TS.alignmentBasedDisambiguation(secondVectors, firstVectorSet, alignmentMeasure, alignmentVecSize, toBeTakens); 
 
 			List<SemSig> srcSigs = new ArrayList<SemSig>();
 			List<SemSig> trgSigs = new ArrayList<SemSig>();
@@ -509,7 +487,7 @@ public class ADW
 	//TODO: automatic detection of text types
 	public static void main(String args[])
 	{
-//		demo();
+		demo();
 		
         ADW pipeLine = new ADW();
 
@@ -520,7 +498,7 @@ public class ADW
         LexicalItemType text2Type = LexicalItemType.SURFACE_TAGGED;
         
         //if lexical items has to be disambiguated
-        DisambiguationMethod disMethod = DisambiguationMethod.NONE;
+        DisambiguationMethod disMethod = DisambiguationMethod.ALIGNMENT_BASED;
         
         //measure for comparing semantic signatures
         SignatureComparison measure = new WeightedOverlap(); 
