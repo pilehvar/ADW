@@ -1,7 +1,7 @@
 ADW
 ===
 
-ADW (Align, Disambiguate and Walk) version 1.0 -- July 25, 2014.
+ADW (Align, Disambiguate and Walk) version 1.0 -- September 1, 2014.
 
 
 CONTENTS
