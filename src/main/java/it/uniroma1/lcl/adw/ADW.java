@@ -189,47 +189,47 @@ public class ADW
 			List<String> cookedSentence = new ArrayList<String>();
 			Pair<List<String>,List<String>> out = new Pair<List<String>,List<String>>(null,null);
 			
-			switch (textType)
+			for(String item : Arrays.asList(text.split(" ")))
 			{
-				case SENSE_OFFSETS:
-					for(String offset : Arrays.asList(text.split(" ")))
-						cookedSentence.add(offset);
-
-					break;
-					
-				case SENSE_KEYS:
-					for(String senseKey : Arrays.asList(text.split(" ")))
-					{
-						IWord sense = WordNet.getInstance().getSenseFromSenseKey(senseKey);
-						String offset = GeneralUtils.fixOffset(sense.getSynset().getOffset(), sense.getPOS());
-						cookedSentence.add(offset);
-					}
-					
-					break;
-					
-				case WORD_SENSE:
-					for(String wordSense : Arrays.asList(text.split(" ")))
-					{
-						IWord sense = WordNetUtils.mapWordSenseToIWord(wordnetVersion, wordSense);
-						String offset = GeneralUtils.fixOffset(sense.getSynset().getOffset(), sense.getPOS());
-						cookedSentence.add(offset);
-					}
-					
-					break;
-					
-				case SURFACE:
-					out = TS.cookSentence(text);
-					cookedSentence = out.getFirst();	
-					
-					break;
+				if(item.trim().length() == 0) continue;
 				
-				case SURFACE_TAGGED:
-					for(String word : text.split(" "))
-					cookedSentence.add(word);
+				switch (textType)
+				{
+					case SENSE_OFFSETS:
 					
-					break;
+						cookedSentence.add(item);
+						break;
+					
+					case SENSE_KEYS:
+						
+						IWord sense = WordNet.getInstance().getSenseFromSenseKey(item);
+						cookedSentence.add(GeneralUtils.fixOffset(sense.getSynset().getOffset(), sense.getPOS()));
+						break;
+				
+					case WORD_SENSE:
+						
+						IWord snse = WordNetUtils.mapWordSenseToIWord(wordnetVersion, item);
+						cookedSentence.add(GeneralUtils.fixOffset(snse.getSynset().getOffset(), 
+								snse.getPOS()));
+						break;
+				
+					case SURFACE:
+						
+						out = TS.cookSentence(text);
+						cookedSentence = out.getFirst();	
+						break;
+			
+					case SURFACE_TAGGED:
+						for(String word : text.split(" "))
+							cookedSentence.add(word);
+				
+						break;
+				
+				}
+				
 			}
-				
+		
+		
 			if(cookedSentence == null)
 				cookedSentence = new ArrayList<String>();
 			
@@ -272,6 +272,8 @@ public class ADW
 		
 		for(String s : input.split(" "))
 		{
+			if(s.trim().length() == 0) continue;
+				
 			switch(type)
 			{
 				case SENSE_OFFSETS:
@@ -411,21 +413,39 @@ public class ADW
 		return vectors;
 	}
 	
+	public LexicalItemType guessLexicalItemType(String input)
+	{
+		String firstWord = input.split(" ")[0];
+		
+		if(firstWord.matches("[0-9]*\\-[anvr]"))
+			return LexicalItemType.SENSE_OFFSETS;
+		
+		if(firstWord.matches("[^ ]*%[0-9]*:[^ ]*"))
+			return LexicalItemType.SENSE_KEYS;
+		
+		if(WordNetUtils.mapWordSenseToIWord(wordnetVersion, firstWord) != null)
+			return LexicalItemType.WORD_SENSE;
+		
+		if(firstWord.matches("[^ ]*#[nvra]"))
+			return LexicalItemType.SURFACE_TAGGED;
+		
+		return LexicalItemType.SURFACE;
+	}
 	
 	public static void demo()
 	{
         ADW pipeLine = new ADW();
-
+        
         String text1 = "a mill that is powered by the wind";
         LexicalItemType text1Type = LexicalItemType.SURFACE;
         
         String text2 = "windmill#n rotate#v wind#n";
         LexicalItemType text2Type = LexicalItemType.SURFACE_TAGGED;
         
-        String text3 = "windmill.n.1";	//or windmill#n#1
+        String text3 = "windmill.n.1 wind.n.1 rotate.v.1";	//or windmill#n#1
         LexicalItemType text3Type = LexicalItemType.WORD_SENSE;
         
-        String text4 = "windmill%1:06:01::";
+        String text4 = "windmill%1:06:01::  windmill%1:06:01::";
         LexicalItemType text4Type = LexicalItemType.SENSE_KEYS;
         
         String text5 = "terminate";
