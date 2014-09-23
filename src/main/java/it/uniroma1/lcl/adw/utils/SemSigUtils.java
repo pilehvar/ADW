@@ -4,6 +4,7 @@ import it.uniroma1.lcl.adw.semsig.SemSig;
 import it.uniroma1.lcl.jlt.util.Maps;
 import it.uniroma1.lcl.jlt.util.Maps.SortingOrder;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -31,12 +32,14 @@ public class SemSigUtils
 	 * @param normalize
 	 * @return truncated vector
 	 */	
-	public static LinkedHashMap<Integer,Float> truncateVector(Map<Integer,Float> vector, int size, boolean normalize)
+	public static LinkedHashMap<Integer,Float> truncateVector(Map<Integer,Float> vector, boolean sorted, int size, boolean normalize)
 	{
 		LinkedHashMap<Integer,Float> truncatedMap = new LinkedHashMap<Integer,Float>();
 		
+		List<Integer> keys = (sorted)? new ArrayList<Integer>(vector.keySet()) : new ArrayList<Integer>(sortVector(vector).keySet());
+		
 		int i = 0;
-		for(int key : sortVector(vector).keySet())
+		for(int key : keys)
 		{
 			truncatedMap.put(key, vector.get(key));
 			
@@ -49,6 +52,27 @@ public class SemSigUtils
 		}
 		
 		return truncatedMap;
+	}
+	
+	/**
+	 * Truncates a vector to the top-n elements (assumes that the input vector is already sorted)
+	 * @param vector
+	 * @param size
+	 * @param normalize
+	 * @return truncated vector
+	 */
+	public static LinkedHashMap<Integer,Float> truncateSortedVector(LinkedHashMap<Integer,Float> vector, int size)
+	{
+		LinkedHashMap<Integer,Float> sortedMap = new LinkedHashMap<Integer,Float>();
+		
+		int i = 1;
+		for(int key : vector.keySet())
+		{
+			sortedMap.put(key, vector.get(key));
+			if(i++ > size) break;
+		}
+		
+		return new LinkedHashMap<Integer,Float>(normalizeVector(sortedMap));
 	}
 
 	/**
@@ -93,26 +117,6 @@ public class SemSigUtils
 		return overallSig;
 	}
 
-	/**
-	 * Truncates a vector to the top-n elements (assumes that the input vector is already sorted)
-	 * @param vector
-	 * @param size
-	 * @param normalize
-	 * @return truncated vector
-	 */
-	public static LinkedHashMap<Integer,Float> truncateSortedVector(LinkedHashMap<Integer,Float> vector, int size)
-	{
-		LinkedHashMap<Integer,Float> sortedMap = new LinkedHashMap<Integer,Float>();
-		
-		int i = 1;
-		for(int key : vector.keySet())
-		{
-			sortedMap.put(key, vector.get(key));
-			if(i++ > size) break;
-		}
-		
-		return new LinkedHashMap<Integer,Float>(normalizeVector(sortedMap));
-	}
 	
 	/**
 	 * Normalizes the probability values in a vector so that to sum to 1.0
