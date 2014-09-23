@@ -25,6 +25,15 @@ public class SemSigComparator
 		return compareSortedNormalizedMaps(v1.getVector(), v2.getVector(), measure, size);
 	}
 	
+	public static Double compareSortedNormalizedMaps(
+			LinkedHashMap<Integer,Float> vec1, 
+			LinkedHashMap<Integer,Float> vec2, 
+			SignatureComparison measure, 
+			int size)
+	{
+		return compare(vec1, vec2, measure, size, true, true);
+	}
+	
 	public static Double compare(
 			SemSig v1, 
 			SemSig v2, 
@@ -39,15 +48,6 @@ public class SemSigComparator
 		return compare(v1.getVector(), v2.getVector(), measure, size, sorted, normalized);
 	}
 	
-	public static Double compareSortedNormalizedMaps(
-			LinkedHashMap<Integer,Float> vec1, 
-			LinkedHashMap<Integer,Float> vec2, 
-			SignatureComparison measure, 
-			int size)
-	{
-		return compare(vec1, vec2, measure, size, true, true);
-	}
-	
 	public static Double compare(
 			LinkedHashMap<Integer,Float> vec1, 
 			LinkedHashMap<Integer,Float> vec2, 
@@ -60,10 +60,10 @@ public class SemSigComparator
 		int v2Size = vec2.size();
 		
 		if(size != 0 && size < v1Size)
-			vec1 = SemSigUtils.truncateVector(vec1, size, true);
+			vec1 = SemSigUtils.truncateVector(vec1, sorted, size, true);
 		
 		if(size != 0 && size < v2Size)
-			vec2 = SemSigUtils.truncateVector(vec2, size, true);
+			vec2 = SemSigUtils.truncateVector(vec2, sorted, size, true);
 		
 		if(!normalized)
 		{
