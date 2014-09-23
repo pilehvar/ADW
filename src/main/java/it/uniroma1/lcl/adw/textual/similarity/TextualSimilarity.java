@@ -93,8 +93,10 @@ public class TextualSimilarity
 		}
 		catch (Exception e)
 		{
-			throw new RuntimeException("Could not init TextualSimilarity: " + e.getMessage());
+			e.printStackTrace();
 		}
+		
+		return null;
 	}
 	
 	/**
