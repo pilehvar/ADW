@@ -1,8 +1,5 @@
 package it.uniroma1.lcl.adw;
 
-import it.uniroma1.lcl.adw.comparison.Cosine;
-import it.uniroma1.lcl.adw.comparison.JensenShannon;
-import it.uniroma1.lcl.adw.comparison.KLDivergence;
 import it.uniroma1.lcl.adw.comparison.SignatureComparison;
 import it.uniroma1.lcl.adw.comparison.WeightedOverlap;
 import it.uniroma1.lcl.adw.semsig.LKB;
@@ -103,14 +100,16 @@ public class ADW
 
 		if(!checkType(text1, srcTextType))
 		{
-			log.error("Invalid input type for "+ srcTextType +" and string \""+ text1 +"\"! Please check the input");
-			System.exit(0);
+			log.error("Invalid input type for "+ srcTextType +" and string \""+ text1 +"\"! Please check the input type");
+			return 0;
+//			System.exit(0);
 		}
 		
 		if(!checkType(text2, trgTextType))
 		{
-			log.error("Invalid input type for "+ trgTextType +" and string \""+ text2 +"\"! Please check the input");
-			System.exit(0);
+			log.error("Invalid input type for "+ trgTextType +" and string \""+ text2 +"\"! Please check the input type");
+			return 0;
+//			System.exit(0);
 		}
 	
 
@@ -507,13 +506,13 @@ public class ADW
 	//TODO: automatic detection of text types
 	public static void main(String args[])
 	{
-		demo();
+//		demo();
 		
         ADW pipeLine = new ADW();
-
+        
         String text1 = "get#v";
         LexicalItemType text1Type = LexicalItemType.SURFACE_TAGGED;
-        
+
         String text2 = "have#v";
         LexicalItemType text2Type = LexicalItemType.SURFACE_TAGGED;
         
