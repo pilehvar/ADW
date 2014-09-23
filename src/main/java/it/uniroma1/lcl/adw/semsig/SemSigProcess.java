@@ -2,7 +2,6 @@ package it.uniroma1.lcl.adw.semsig;
 
 import it.uniroma1.lcl.adw.ADWConfiguration;
 import it.uniroma1.lcl.adw.LexicalItemType;
-import it.uniroma1.lcl.adw.comparison.WeightedOverlap;
 import it.uniroma1.lcl.adw.utils.GeneralUtils;
 import it.uniroma1.lcl.adw.utils.SemSigUtils;
 import it.uniroma1.lcl.adw.utils.WordNetUtils;
