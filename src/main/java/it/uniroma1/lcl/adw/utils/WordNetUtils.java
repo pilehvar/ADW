@@ -8,6 +8,9 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import edu.mit.jwi.item.ISynset;
 import edu.mit.jwi.item.IWord;
 import edu.mit.jwi.item.POS;
@@ -16,6 +19,8 @@ public class WordNetUtils
 {
 	private static final Pattern wordSenseFormat = Pattern.compile("([^ ]*)[\\.#]([anvr])[\\.#](\\d+)");
 	private static WordNetVersion wnv = WordNetVersion.WN_30;
+	
+	private static final Log log = LogFactory.getLog(WordNetUtils.class);
 	
 	public static String mapIWordToReadableForm(WordNetVersion wnv, IWord word)
 	{
@@ -55,7 +60,7 @@ public class WordNetUtils
 		
 		if(senseRank > senses.size())
 		{
-			System.out.println("[ERROR: could not generate the readable form for "+word+" "+offset);
+			log.warn("[ERROR: could not generate the readable form for "+word+" "+offset);
 			return "null";
 		}
 
@@ -82,8 +87,8 @@ public class WordNetUtils
 		}
 		else
 		{
-			System.out.println("[ERROR: non matching regular expression at "+ wordSense+"]");
-			System.exit(0);
+//			log.warn("[ERROR: non matching regular expression at "+ wordSense+"]");
+//			System.exit(0);
 			return null;
 		}			
 	}
