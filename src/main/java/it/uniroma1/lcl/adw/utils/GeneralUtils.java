@@ -2,17 +2,13 @@ package it.uniroma1.lcl.adw.utils;
 
 import it.uniroma1.lcl.adw.ADWConfiguration;
 import it.uniroma1.lcl.jlt.util.Files;
-import it.uniroma1.lcl.jlt.util.Maps;
-import it.uniroma1.lcl.jlt.util.Maps.SortingOrder;
 import it.uniroma1.lcl.jlt.wordnet.WordNet;
 
 import java.io.BufferedReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 import edu.mit.jwi.item.IWord;
 import edu.mit.jwi.item.POS;
