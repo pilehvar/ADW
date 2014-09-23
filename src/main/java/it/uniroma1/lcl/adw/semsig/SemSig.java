@@ -8,7 +8,7 @@ import edu.mit.jwi.item.POS;
  * A Semantic Signature
  * 
  * Semantic signatures in the current build are obtained by running the 
- * Persoanlized PageRank algorithm on the {@link WordNetGloss} graph.
+ * Personalized PageRank algorithm on the {@link WordNetGloss} graph.
  * 
  * The original size of these signatures is equal to the number of connected nodes
  * in the graph which is about 118K. Due to space constraints, however, a compressed
