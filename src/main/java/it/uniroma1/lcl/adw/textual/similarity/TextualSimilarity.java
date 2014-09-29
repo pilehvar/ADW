@@ -238,21 +238,6 @@ public class TextualSimilarity
 			return true;
 	}
 	
-	public boolean isOOV(String wordpos)
-	{
-		String comps[] = wordpos.split("#");
-		String word = comps[0];
-		String tag = comps[1];
-		
-		if(tag == null || tag.equals("?"))
-			return true;
-		
-		if(allWordNetEntries.get(tag).contains(word))
-			return false;
-		else
-			return true;
-	}
-	
 	/**
 	 * 
 	 * @param inSentence
