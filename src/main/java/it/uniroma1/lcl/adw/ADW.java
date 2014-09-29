@@ -90,6 +90,20 @@ public class ADW
 		}
 	}
 	
+	public Pair<Boolean,String> evaluateInputType(String input, LexicalItemType type)
+	{
+		boolean passed = checkType(input, type);
+		
+		if(!passed)
+		{
+			return new Pair<Boolean,String>(false,"Invalid input type for "+ type +" and string \""+ input +"\"! Please check the input type.");
+		}
+		else
+		{
+			return new Pair<Boolean,String>(true,"Valid input type for "+ type +" and string \""+ input +"\".");
+		}
+	}
+	
 	public double getPairSimilarity(
 			String text1, String text2, 
 			DisambiguationMethod disMethod,
@@ -98,21 +112,18 @@ public class ADW
 			LexicalItemType trgTextType)
 	{
 
-		if(!checkType(text1, srcTextType))
+		if(!evaluateInputType(text1, srcTextType).getFirst())
 		{
-			log.error("Invalid input type for "+ srcTextType +" and string \""+ text1 +"\"! Please check the input type");
 			return 0;
 //			System.exit(0);
 		}
 		
-		if(!checkType(text2, trgTextType))
+		if(!evaluateInputType(text2, trgTextType).getFirst())
 		{
-			log.error("Invalid input type for "+ trgTextType +" and string \""+ text2 +"\"! Please check the input type");
 			return 0;
 //			System.exit(0);
 		}
-	
-
+		
 		//pre-process sentence pair
 		List<String> cookedSentence1 = cookLexicalItem(text1, srcTextType, discardStopwords).getFirst();
 		List<String> cookedSentence2 = cookLexicalItem(text2, trgTextType, discardStopwords).getFirst();
@@ -510,8 +521,8 @@ public class ADW
 		
         ADW pipeLine = new ADW();
         
-        String text1 = "get#v";
-        LexicalItemType text1Type = LexicalItemType.SURFACE_TAGGED;
+        String text1 = "get#v#1";
+        LexicalItemType text1Type = LexicalItemType.WORD_SENSE;
 
         String text2 = "have#v";
         LexicalItemType text2Type = LexicalItemType.SURFACE_TAGGED;
