@@ -1,0 +1,1 @@
+libWN_a-wnglobal.o: wnglobal.c
