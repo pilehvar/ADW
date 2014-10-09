@@ -2,7 +2,8 @@ ADW
 ===
 
 ADW (Align, Disambiguate and Walk) version 1.0 -- October 13, 2014.
-Online demo at: lcl.uniroma1.it/adw/
+
+Online demo: http://lcl.uniroma1.it/adw/
 
 CONTENTS
 =========================
