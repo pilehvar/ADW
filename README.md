@@ -64,7 +64,7 @@ The following is a usage example for measuring semantic similarity using ADW.
 
 	ADW pipeLine = new ADW();
 	
-	double score = pipeLine.getFastSimilarity(text1, text2,
+	double score = pipeLine.getPairSimilarity(text1, text2,
         					disMethod, measure,
        						srcTextType, trgTextType); 
 
