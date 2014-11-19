@@ -5,12 +5,10 @@ import it.uniroma1.lcl.adw.LexicalItemType;
 import it.uniroma1.lcl.adw.utils.GeneralUtils;
 import it.uniroma1.lcl.adw.utils.SemSigUtils;
 import it.uniroma1.lcl.adw.utils.WordNetUtils;
-import it.uniroma1.lcl.jlt.util.Files;
-import it.uniroma1.lcl.jlt.wordnet.WordNet;
-import it.uniroma1.lcl.jlt.wordnet.WordNetVersion;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -118,7 +116,7 @@ public class SemSigProcess
 		
 		try
 		{
-			BufferedReader br = Files.getBufferedReader(path);
+			BufferedReader br = new BufferedReader(new FileReader(path));
 			
 			float prob;
 			float lastProb = 0.0f;
@@ -373,7 +371,7 @@ public class SemSigProcess
 	
 	public SemSig getSemSigFromWordSense(String wordSense, LKB lkb, int size)
 	{
-		IWord sense = WordNetUtils.mapWordSenseToIWord(WordNetVersion.WN_30, wordSense);
+		IWord sense = WordNetUtils.getInstance().mapWordSenseToIWord(wordSense);
 		String offset = GeneralUtils.fixOffset(sense.getSynset().getOffset(),sense.getPOS());
 		return getSemSigFromOffset(offset, lkb, size);
 	}
@@ -418,7 +416,7 @@ public class SemSigProcess
 			String word = comps[0];
 			POS pos = GeneralUtils.getTagfromTag(comps[1]);
 			
-			List<IWord> senses = WordNet.getInstance().getSenses(word, pos);
+			List<IWord> senses = WordNetUtils.getInstance().getSenses(word, pos);
 			
 			if(senses == null)
 				return null;

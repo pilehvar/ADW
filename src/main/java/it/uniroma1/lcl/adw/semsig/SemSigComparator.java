@@ -5,7 +5,7 @@ import it.uniroma1.lcl.adw.comparison.SignatureComparison;
 import it.uniroma1.lcl.adw.comparison.WeightedOverlap;
 import it.uniroma1.lcl.adw.utils.GeneralUtils;
 import it.uniroma1.lcl.adw.utils.SemSigUtils;
-import it.uniroma1.lcl.jlt.wordnet.WordNet;
+import it.uniroma1.lcl.adw.utils.WordNetUtils;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -93,11 +93,11 @@ public class SemSigComparator
 		IWord src = null;
 		IWord trg = null;
 		
-		for(IWord sense1 : WordNet.getInstance().getSenses(w1, tag1))
+		for(IWord sense1 : WordNetUtils.getInstance().getSenses(w1, tag1))
 		{
 			SemSig v1 = SemSigProcess.getInstance().getSemSigFromOffset(GeneralUtils.fixOffset(sense1.getSynset().getOffset(), tag1), lkb, size);
 		    
-			for(IWord sense2 : WordNet.getInstance().getSenses(w2, tag2))
+			for(IWord sense2 : WordNetUtils.getInstance().getSenses(w2, tag2))
 			{
 				SemSig v2 = SemSigProcess.getInstance().getSemSigFromOffset(GeneralUtils.fixOffset(sense2.getSynset().getOffset(), tag2), lkb, size);	
 				
