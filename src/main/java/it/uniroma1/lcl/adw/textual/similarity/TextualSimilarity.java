@@ -7,7 +7,7 @@ import it.uniroma1.lcl.adw.semsig.LKB;
 import it.uniroma1.lcl.adw.semsig.SemSig;
 import it.uniroma1.lcl.adw.semsig.SemSigComparator;
 import it.uniroma1.lcl.adw.semsig.SemSigProcess;
-import it.uniroma1.lcl.adw.utils.DataProcessor;
+import it.uniroma1.lcl.adw.utils.SentenceProcessor;
 import it.uniroma1.lcl.adw.utils.GeneralUtils;
 import it.uniroma1.lcl.adw.utils.WordNetUtils;
 import it.uniroma1.lcl.jlt.pipeline.stanford.StanfordSentence;
@@ -112,7 +112,7 @@ public class TextualSimilarity
 	 */
 	public Pair<List<String>, List<String>> getStanfordSentence(String sentence)
 	{
-		List<WordLemmaTag> wlts = DataProcessor.getInstance().processSentence(sentence, false);
+		List<WordLemmaTag> wlts = SentenceProcessor.getInstance().processSentence(sentence, false);
 		
 		List<String> terms = null;
 		StanfordSentence sSentence = StanfordSentence.fromLine(Strings.join(wlts," "));

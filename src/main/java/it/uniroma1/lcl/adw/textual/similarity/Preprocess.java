@@ -1,7 +1,7 @@
 package it.uniroma1.lcl.adw.textual.similarity;
 
 import it.uniroma1.lcl.adw.ADWConfiguration;
-import it.uniroma1.lcl.adw.utils.DataProcessor;
+import it.uniroma1.lcl.adw.utils.SentenceProcessor;
 import it.uniroma1.lcl.adw.utils.GeneralUtils;
 import it.uniroma1.lcl.adw.utils.SemSigUtils;
 import it.uniroma1.lcl.adw.utils.StanfordTokenizer;
@@ -170,7 +170,7 @@ public class Preprocess
 		for(Pair<String,String> aPair : tempList)
 		{
 			HashMap<String,String> replacement = new HashMap<String,String>();
-			List<WordLemmaTag> wlts = DataProcessor.getInstance().processSentence(aPair.first, false);
+			List<WordLemmaTag> wlts = SentenceProcessor.getInstance().processSentence(aPair.first, false);
 			
 			try
 			{
