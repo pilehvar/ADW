@@ -150,7 +150,7 @@ If you use this system, please cite the following paper:
 
 For more information please contact:
 
-> pilehvar atsign di <dot> uniroma1 <dot> it
+> pilehvar atsign di (dot) uniroma1 (dot) it
 
 For bug reports, fixes and issues please use our github page:
 https://github.com/pilehvar/ADW
