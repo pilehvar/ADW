@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Set;
 
 import edu.mit.jwi.item.IWord;
+import edu.stanford.nlp.util.Pair;
 
 import it.uniroma1.lcl.adw.ADW;
 import it.uniroma1.lcl.adw.ADWConfiguration;
@@ -22,16 +23,12 @@ import it.uniroma1.lcl.adw.semsig.SemSigProcess;
 import it.uniroma1.lcl.adw.utils.GeneralUtils;
 import it.uniroma1.lcl.adw.utils.SemSigUtils;
 import it.uniroma1.lcl.adw.utils.WordNetUtils;
-import it.uniroma1.lcl.jlt.util.Pair;
-import it.uniroma1.lcl.jlt.wordnet.WordNet;
-import it.uniroma1.lcl.jlt.wordnet.WordNetVersion;
 
 public class PairSimilarity 
 {
 	private SignatureComparison alignmentMeasure;
 	private int alignmentVecSize;
 	private int testedVectorSize;
-	private static final WordNetVersion WORDNET_VERSION = WordNetVersion.WN_30;
 	private static boolean discardStopwords = ADWConfiguration.getInstance().getDiscardStopwordsCondition();
 	private static boolean mirrorPOStagging = ADWConfiguration.getInstance().getMirrorPOSTaggingCondition();
 	
@@ -103,13 +100,13 @@ public class PairSimilarity
 					
 					case SENSE_KEYS:
 						
-						IWord sense = WordNet.getInstance().getSenseFromSenseKey(item);
+						IWord sense = WordNetUtils.getInstance().getSenseFromSenseKey(item);
 						cookedSentence.add(GeneralUtils.fixOffset(sense.getSynset().getOffset(), sense.getPOS()));
 						break;
 				
 					case WORD_SENSE:
 						
-						IWord snse = WordNetUtils.mapWordSenseToIWord(WORDNET_VERSION, item);
+						IWord snse = WordNetUtils.getInstance().mapWordSenseToIWord(item);
 						cookedSentence.add(GeneralUtils.fixOffset(snse.getSynset().getOffset(), 
 								snse.getPOS()));
 						break;
@@ -117,7 +114,7 @@ public class PairSimilarity
 					case SURFACE:
 						
 						out = TextualSimilarity.getInstance().cookSentence(text);
-						cookedSentence = out.getFirst();	
+						cookedSentence = out.first;	
 						break;
 			
 					case SURFACE_TAGGED:
@@ -156,7 +153,7 @@ public class PairSimilarity
 			
 			cookedSentence = newCS;
 
-			return new Pair<List<String>,List<String>> (cookedSentence,out.getSecond());
+			return new Pair<List<String>,List<String>> (cookedSentence,out.second);
 		}
 		catch(Exception e)
 		{
@@ -209,7 +206,7 @@ public class PairSimilarity
 			Set<SemSig> toBeTakens = new HashSet<SemSig>();
 			for(Pair<SemSig,SemSig> sig : alignments.keySet())
 				if(Math.abs(alignments.get(sig) - 1) < 0.0001)
-					toBeTakens.add(sig.getSecond());
+					toBeTakens.add(sig.second);
 			
 			alignmentsRev = TextualSimilarity.getInstance().alignmentBasedDisambiguation(secondVectors, firstVectorSet, alignmentMeasure, alignmentVecSize, toBeTakens); 
 
@@ -217,10 +214,10 @@ public class PairSimilarity
 			List<SemSig> trgSigs = new ArrayList<SemSig>();
 			
 			for(Pair<SemSig,SemSig> sig : alignments.keySet())
-				srcSigs.add(sig.getFirst());
+				srcSigs.add(sig.first);
 				
 			for(Pair<SemSig,SemSig> sig : alignmentsRev.keySet())
-				trgSigs.add(sig.getFirst());
+				trgSigs.add(sig.first);
 			
 			return new Pair<List<SemSig>,List<SemSig>>(srcSigs,trgSigs);
 			
@@ -243,7 +240,7 @@ public class PairSimilarity
 		if(firstWord.matches("[^ ]*%[0-9]*:[^ ]*"))
 			return LexicalItemType.SENSE_KEYS;
 		
-		if(WordNetUtils.mapWordSenseToIWord(WORDNET_VERSION, firstWord) != null)
+		if(WordNetUtils.getInstance().mapWordSenseToIWord(firstWord) != null)
 			return LexicalItemType.WORD_SENSE;
 		
 		if(firstWord.matches("[^ ]*#[nvra]"))
@@ -275,8 +272,8 @@ public class PairSimilarity
 	{
 
 		//pre-process sentence pair
-		List<String> cookedSentence1 = cookLexicalItem(text1, srcTextType, discardStopwords).getFirst();
-		List<String> cookedSentence2 = cookLexicalItem(text2, trgTextType, discardStopwords).getFirst();
+		List<String> cookedSentence1 = cookLexicalItem(text1, srcTextType, discardStopwords).first;
+		List<String> cookedSentence2 = cookLexicalItem(text2, trgTextType, discardStopwords).first;
 		
 		//Mirror pos tagging
 		if(mirrorPOStagging && 
@@ -285,8 +282,8 @@ public class PairSimilarity
 		{
 			Pair<List<String>, List<String>> aPair  = mirrorPosTags(cookedSentence1, cookedSentence2);
 			
-			cookedSentence1 = aPair.getFirst();
-			cookedSentence2 = aPair.getSecond();	
+			cookedSentence1 = aPair.first;
+			cookedSentence2 = aPair.second;	
 		}
 		
 		List<SemSig> srcSemSigs = new ArrayList<SemSig>();
@@ -308,8 +305,8 @@ public class PairSimilarity
 						srcTextType, trgTextType, LKB.WordNetGloss, alignmentMeasure, alignmentVecSize, 
 						true, true);
 				
-				srcSemSigs = disambiguatedPair.getFirst();
-				trgSemSigs = disambiguatedPair.getSecond();
+				srcSemSigs = disambiguatedPair.first;
+				trgSemSigs = disambiguatedPair.second;
 				
 				break;
 				

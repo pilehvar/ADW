@@ -1,17 +1,15 @@
 package it.uniroma1.lcl.adw.textual.similarity;
 
+import it.uniroma1.lcl.adw.ADWConfiguration;
+import it.uniroma1.lcl.adw.utils.DataProcessor;
 import it.uniroma1.lcl.adw.utils.GeneralUtils;
-import it.uniroma1.lcl.jlt.pipeline.stanford.DataProcessor;
-import it.uniroma1.lcl.jlt.pipeline.stanford.StanfordTokenizer;
+import it.uniroma1.lcl.adw.utils.SemSigUtils;
+import it.uniroma1.lcl.adw.utils.StanfordTokenizer;
+import it.uniroma1.lcl.adw.utils.WordNetUtils;
 import it.uniroma1.lcl.jlt.util.EnglishLemmatizer;
-import it.uniroma1.lcl.jlt.util.Files;
-import it.uniroma1.lcl.jlt.util.Maps;
-import it.uniroma1.lcl.jlt.util.Maps.SortingOrder;
-import it.uniroma1.lcl.jlt.util.Pair;
-import it.uniroma1.lcl.jlt.util.Strings;
-import it.uniroma1.lcl.jlt.wordnet.WordNet;
 
 import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -19,7 +17,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import edu.mit.jwi.item.POS;
 import edu.stanford.nlp.ling.WordLemmaTag;
+import edu.stanford.nlp.util.Pair;
 
 /**
  * a class for preprocessing a surface-level lexical item
@@ -28,8 +28,16 @@ import edu.stanford.nlp.ling.WordLemmaTag;
  */
 public class Preprocess 
 {
-	static private Set<String> allWNWords = null;
-	
+	private static Preprocess instance;
+
+	private Preprocess() { }
+
+	public static synchronized Preprocess getInstance()
+	{
+		if (instance == null) instance = new Preprocess();
+		return instance;
+	}
+
 	
 	/**
 	 * removes hyphen only if the word cannot be found in WN 
@@ -39,9 +47,6 @@ public class Preprocess
 	 */
 	public static String removeHyphens(String sentence)
 	{
-		if(allWNWords == null)
-			allWNWords = WordNet.getInstance().getAllWords();
-		
 		String cleanedSentence = "";
 		
 		for(String word : StanfordTokenizer.getInstance().tokenizeString(sentence))
@@ -51,13 +56,13 @@ public class Preprocess
 				cleanedSentence += word;
 			else
 			{
-				if(WordNet.getInstance().containsLemma(WordNet.getInstance().getSingularOf(word)))
+				if(WordNetUtils.getInstance().inVocabulary(WordNetUtils.getInstance().getSingularOf(word, POS.NOUN)))
 					cleanedSentence += word;
 				else
 				{
 					String replacement = word.replaceAll("[-/<>]", "").trim();
 				
-					if(WordNet.getInstance().containsLemma(WordNet.getInstance().getSingularOf(replacement)))
+					if(WordNetUtils.getInstance().inVocabulary(WordNetUtils.getInstance().getSingularOf(replacement, POS.NOUN)))
 						cleanedSentence += replacement;
 					else
 						cleanedSentence += word.replaceAll("[-/><]", " ").trim();
@@ -74,16 +79,13 @@ public class Preprocess
 	{
 		TextualSimilarity TS = new TextualSimilarity();
 		
-		WordNet wn = WordNet.getInstance();
-		Set<String> allWNWords = wn.getAllWords();
-		
 //		int index = 1;
 		
 		for(Pair<String,String> aPair : pairs)
 		{
 			//System.out.println("[working on "+ index++ +"]");
-			List<String> sentA = TS.cookSentence(aPair.getFirst()).getFirst();
-			List<String> sentB = TS.cookSentence(aPair.getSecond()).getFirst();
+			List<String> sentA = TS.cookSentence(aPair.first).first;
+			List<String> sentB = TS.cookSentence(aPair.second).first;
 			
 			//System.out.println(sentA+"\t"+sentB);
 			
@@ -94,7 +96,7 @@ public class Preprocess
 			{
 				///
 				
-				if(!allWNWords.contains(WordNet.getInstance().getSingularOf(a)))
+				if(!WordNetUtils.getInstance().inVocabulary(WordNetUtils.getInstance().getSingularOf(a, POS.NOUN)))
 					System.out.println(a);
 				
 				
@@ -162,13 +164,13 @@ public class Preprocess
 		List<Pair<String,String>> tempList = new ArrayList<Pair<String,String>>();
 		
 		tempList.add(sentencePair);
-		tempList.add(new Pair<String,String>(sentencePair.getSecond(),sentencePair.getFirst()));
+		tempList.add(new Pair<String,String>(sentencePair.second,sentencePair.first));
 		
 		int direction = 0;
 		for(Pair<String,String> aPair : tempList)
 		{
 			HashMap<String,String> replacement = new HashMap<String,String>();
-			List<WordLemmaTag> wlts = DataProcessor.getInstance().processSentence(aPair.getFirst(), false);
+			List<WordLemmaTag> wlts = DataProcessor.getInstance().processSentence(aPair.first, false);
 			
 			try
 			{
@@ -178,9 +180,9 @@ public class Preprocess
 				{
 					String tg = GeneralUtils.shortenTagString(wlt.tag());
 					
-					String lemma = WordNet.getInstance().getSingularOf(wlt.lemma()).toLowerCase();
+					String lemma = WordNetUtils.getInstance().getSingularOf(wlt.lemma(), POS.NOUN).toLowerCase();
 					
-					if(tags.contains(tg) && !WordNet.getInstance().containsLemma(lemma))
+					if(tags.contains(tg) && ! WordNetUtils.getInstance().inVocabulary(lemma))
 					{
 						String wnLemma = el.getWordNetLemma(wlt.word(), tg);
 						
@@ -188,23 +190,23 @@ public class Preprocess
 						if(wnLemma == null)
 						{
 							for(String t : tags)
-								if(WordNet.getInstance().containsLemma(lemma, GeneralUtils.getTagfromTag(t)))
+								if(WordNetUtils.getInstance().inVocabulary(lemma, GeneralUtils.getTagfromTag(t)))
 								{
 									tg = t;
 									break;
 								}
 						}
 						
-						String alternative = getAlternative(wlt.lemma(),aPair.getSecond());
-						if(tags.contains(tg) && !WordNet.getInstance().containsLemma(WordNet.getInstance().getSingularOf(lemma.toLowerCase())))
-							if(!aPair.getSecond().contains(wlt.lemma()))
+						String alternative = getAlternative(wlt.lemma(),aPair.second);
+						if(tags.contains(tg) && !WordNetUtils.getInstance().inVocabulary(WordNetUtils.getInstance().getSingularOf(lemma.toLowerCase(), POS.NOUN)))
+							if(!aPair.second.contains(wlt.lemma()))
 							{
 								if(!alternative.equals(wlt.lemma()))
 								{
 									replacement.put(wlt.lemma(), alternative);
 									System.out.println(wlt.lemma()+"\t"+alternative+"\t"+direction);
-									System.out.println("\t"+aPair.getFirst());
-									System.out.println("\t"+aPair.getSecond());
+									System.out.println("\t"+aPair.first);
+									System.out.println("\t"+aPair.second);
 								}
 							}
 								
@@ -227,8 +229,8 @@ public class Preprocess
 	public static Pair<String,String> fixSpellErrors(Pair<String,String> pair, HashMap<String,String> replacementA, HashMap<String,String> replacementB)
 	{
 		
-		List<String> sentenceA = StanfordTokenizer.getInstance().tokenizeString(pair.getFirst());
-		List<String> sentenceB = StanfordTokenizer.getInstance().tokenizeString(pair.getSecond());
+		List<String> sentenceA = StanfordTokenizer.getInstance().tokenizeString(pair.first);
+		List<String> sentenceB = StanfordTokenizer.getInstance().tokenizeString(pair.second);
 		
 		List<String> newSentenceA = new ArrayList<String>();
 		List<String> newSentenceB = new ArrayList<String>();
@@ -253,15 +255,15 @@ public class Preprocess
 				newSentenceB.add(s);
 		}
 		
-		System.out.println("\t\t"+Strings.join(newSentenceA," "));
-		System.out.println("\t\t"+Strings.join(newSentenceB," ")+"\n");
-		return new Pair<String,String>(Strings.join(newSentenceA," "),Strings.join(newSentenceB," "));
+		System.out.println("\t\t"+String.join(" ", newSentenceA));
+		System.out.println("\t\t"+String.join(" ", newSentenceB)+"\n");
+		return new Pair<String,String>(String.join(" ", newSentenceA), String.join(" ", newSentenceB));
 	}
 	
 	public static Pair<String,String> caseFixer(Pair<String,String> pair)
 	{
-		List<String> sentenceA = StanfordTokenizer.getInstance().tokenizeString(pair.getFirst());
-		List<String> sentenceB = StanfordTokenizer.getInstance().tokenizeString(pair.getSecond());
+		List<String> sentenceA = StanfordTokenizer.getInstance().tokenizeString(pair.first);
+		List<String> sentenceB = StanfordTokenizer.getInstance().tokenizeString(pair.second);
 		
 		HashMap<String,String> replacementsA = new HashMap<String,String>();
 		HashMap<String,String> replacementsB = new HashMap<String,String>();
@@ -300,7 +302,7 @@ public class Preprocess
 				newSentenceB.add(s);
 		}
 		
-		return new Pair<String,String>(Strings.join(newSentenceA," "),Strings.join(newSentenceB," "));
+		return new Pair<String,String>(String.join(" ",newSentenceA),String.join(" ", newSentenceB));
 	}
 	
 	
@@ -324,7 +326,7 @@ public class Preprocess
 				candidates.put(w,overlaps);
 		}
 			
-		List<String> cands = new ArrayList<String>(Maps.sortByValue(candidates, SortingOrder.DESCENDING).keySet());
+		List<String> cands = new ArrayList<String>(SemSigUtils.sortByValue(candidates).keySet());
 		
 		if(cands.size() > 0)
 			return cands.get(0);
@@ -358,14 +360,14 @@ public class Preprocess
 	{
 		try
 		{
-			BufferedWriter bw = Files.getBufferedWriter(outPath);
-			
+			BufferedWriter bw = new BufferedWriter(new FileWriter(ADWConfiguration.getInstance().getOffsetMapPath(), false)); 
+					
 			int i = 1;
 			for(Pair<String,String> aPair : pairs)
 			{
 				System.out.println("[working on "+ i++ +"]");
-				String first = aPair.getFirst();
-				String second = aPair.getSecond();
+				String first = aPair.first;
+				String second = aPair.second;
 
 				//n't & 'm => not and am
 				first = fixAbbrev(first);
@@ -402,13 +404,13 @@ public class Preprocess
 		{
 			try
 			{
-				BufferedWriter bw = Files.getBufferedWriter(filePath);
+				BufferedWriter bw = new BufferedWriter(new FileWriter(filePath, false)); 
 				
 				//spellchecking
 				for(Pair<String,String> aPair : pairs)
 				{
 					Pair<String,String> fixedPair = spellCorrect(aPair);
-					bw.write(fixedPair.getFirst()+"\t"+fixedPair.getSecond()+"\n");
+					bw.write(fixedPair.first+"\t"+fixedPair.second+"\n");
 				}
 				
 				bw.close();
@@ -427,13 +429,13 @@ public class Preprocess
 	{
 		try
 		{
-			BufferedWriter bw = Files.getBufferedWriter(path);
+			BufferedWriter bw = new BufferedWriter(new FileWriter(path, false)); 
 			
 			for(Pair<String,String> aPair : pairs)
 			{
 				Pair<String,String> fixedPair = caseFixer(aPair);
 				
-				bw.write(fixedPair.getFirst()+"\t"+fixedPair.getSecond()+"\n");
+				bw.write(fixedPair.first+"\t"+fixedPair.second+"\n");
 			}
 			
 			bw.close();
@@ -454,4 +456,6 @@ public class Preprocess
 		System.out.println(TS.cookSentence("an approximated amount of something"));
 		
 	}
+	
+
 }

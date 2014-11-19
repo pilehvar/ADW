@@ -7,17 +7,16 @@ import it.uniroma1.lcl.adw.semsig.LKB;
 import it.uniroma1.lcl.adw.semsig.SemSig;
 import it.uniroma1.lcl.adw.semsig.SemSigComparator;
 import it.uniroma1.lcl.adw.semsig.SemSigProcess;
+import it.uniroma1.lcl.adw.utils.DataProcessor;
 import it.uniroma1.lcl.adw.utils.GeneralUtils;
-import it.uniroma1.lcl.jlt.pipeline.stanford.DataProcessor;
+import it.uniroma1.lcl.adw.utils.WordNetUtils;
 import it.uniroma1.lcl.jlt.pipeline.stanford.StanfordSentence;
 import it.uniroma1.lcl.jlt.pipeline.stanford.StanfordSentence.CompoundingParameter;
 import it.uniroma1.lcl.jlt.pipeline.stanford.StanfordSentence.MultiwordBelongingTo;
 import it.uniroma1.lcl.jlt.util.EnglishLemmatizer;
 import it.uniroma1.lcl.jlt.util.Language;
-import it.uniroma1.lcl.jlt.util.Pair;
 import it.uniroma1.lcl.jlt.util.Stopwords;
 import it.uniroma1.lcl.jlt.util.Strings;
-import it.uniroma1.lcl.jlt.wordnet.WordNet;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -33,7 +32,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import edu.mit.jwi.item.IWord;
-import edu.stanford.nlp.ling.WordLemmaTag;;
+import edu.mit.jwi.item.POS;
+import edu.stanford.nlp.ling.WordLemmaTag;
+import edu.stanford.nlp.util.Pair;
 
 /**
  * a class for computing semantic similarity of a pair of lexical items
@@ -61,7 +62,7 @@ public class TextualSimilarity
 			allWordNetEntries = new MultiHashMap<String,String>();
 		
 			for(String tag : Arrays.asList("n","v","r","a"))
-				allWordNetEntries.putAll(tag, WordNet.getInstance().getAllWords(GeneralUtils.getTagfromTag(tag)));	
+				allWordNetEntries.putAll(tag, WordNetUtils.getInstance().getAllWords(GeneralUtils.getTagfromTag(tag)));	
 		
 		}
 		
@@ -155,7 +156,7 @@ public class TextualSimilarity
 			{
 				String comps[] = term.split("#");
 				String tg = comps[1];
-				String lemma = WordNet.getInstance().getSingularOf(comps[0]);
+				String lemma = WordNetUtils.getInstance().getSingularOf(comps[0], POS.NOUN);
 				String fixedTag = tg;
 				
 				if(!isOOV(lemma, tg))
@@ -183,7 +184,7 @@ public class TextualSimilarity
 						
 						if(wnLemma == null)
 						{
-							for(String l : WordNet.getInstance().getWordNetStems(lemma))
+							for(String l : WordNetUtils.getInstance().getWordNetStems(lemma))
 								if(allWordNetEntries.get(tag).contains(l))
 									lemma = l;
 						}
@@ -251,8 +252,8 @@ public class TextualSimilarity
 			
 			Pair<List<String>, List<String>> sent = getStanfordSentence(inSentence);
 			
-			List<String> sentence = sent.getFirst();
-			List<String> remainings = sent.getSecond();
+			List<String> sentence = sent.first;
+			List<String> remainings = sent.second;
 			
 			 //discard duplicates
 			 Set<String> covered = new HashSet<String>();
@@ -335,7 +336,7 @@ public class TextualSimilarity
 			}
 			else
 			{
-				for(IWord sense : WordNet.getInstance().getSenses(word, GeneralUtils.getTagfromTag(tag)))
+				for(IWord sense : WordNetUtils.getInstance().getSenses(word, GeneralUtils.getTagfromTag(tag)))
 				{
 					thisVectors.add(SemSigProcess.getInstance().getSemSigFromIWord(sense, lkb, vectorSize));
 				}
@@ -523,9 +524,9 @@ public class TextualSimilarity
 		
 		log.info(TS.getStanfordSentence(
 				"Slovakia has not been condemned to the second division and it is logical that it should like to join together with the Czech Republic."
-				).getFirst());
+				).second);
 				
-		System.out.println(TS.getSenseVectorsFromCookedSentence(TS.cookSentence("Slovakia has not been condemned to the second division and it is logical that it should like to join together with the Czech Republic.").getFirst(), LKB.WordNetGloss,0));
+		System.out.println(TS.getSenseVectorsFromCookedSentence(TS.cookSentence("Slovakia has not been condemned to the second division and it is logical that it should like to join together with the Czech Republic.").first, LKB.WordNetGloss,0));
 		
 	}
 	
