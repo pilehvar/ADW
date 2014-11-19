@@ -3,14 +3,12 @@ package it.uniroma1.lcl.adw;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import edu.stanford.nlp.util.Pair;
+
 import it.uniroma1.lcl.adw.comparison.SignatureComparison;
 import it.uniroma1.lcl.adw.comparison.WeightedOverlap;
 import it.uniroma1.lcl.adw.textual.similarity.PairSimilarity;
 import it.uniroma1.lcl.adw.utils.WordNetUtils;
-import it.uniroma1.lcl.jlt.util.Pair;
-import it.uniroma1.lcl.jlt.wordnet.WordNet;
-import it.uniroma1.lcl.jlt.wordnet.WordNetVersion;
-
 
 /**
  * A class to compute the semantic similarity of arbitrary pairs of lexical items
@@ -24,8 +22,6 @@ public class ADW
 	
 	static private ADW instance;
 	private PairSimilarity PS = PairSimilarity.getInstance();
-	
-	private static final WordNetVersion WORDNET_VERSION = WordNetVersion.WN_30;
 	
 	/**
 	 * Used to access {@link ADW}
@@ -72,12 +68,12 @@ public class ADW
 					break;
 						
 				case SENSE_KEYS:
-					if(WordNet.getInstance().getSenseFromSenseKey(s) == null)
+					if(WordNetUtils.getInstance().getSenseFromSenseKey(s) == null)
 						return false;
 					break;
 					
 				case WORD_SENSE:
-					if(WordNetUtils.mapWordSenseToIWord(WORDNET_VERSION, s) == null)
+					if(WordNetUtils.getInstance().mapWordSenseToIWord(s) == null)
 						return false;
 					break;
 			}
@@ -109,13 +105,13 @@ public class ADW
 			LexicalItemType trgTextType)
 	{
 
-		if(!evaluateInputType(text1, srcTextType).getFirst())
+		if(!evaluateInputType(text1, srcTextType).first)
 		{
 			return 0;
 //			System.exit(0);
 		}
 		
-		if(!evaluateInputType(text2, trgTextType).getFirst())
+		if(!evaluateInputType(text2, trgTextType).first)
 		{
 			return 0;
 //			System.exit(0);
@@ -202,10 +198,10 @@ public class ADW
 		
         ADW pipeLine = new ADW();
         
-        String text1 = "get#v#1";
-        LexicalItemType text1Type = LexicalItemType.SURFACE;
+        String text1 = "forgo#v";
+        LexicalItemType text1Type = LexicalItemType.SURFACE_TAGGED;
 
-        String text2 = "have#v";
+        String text2 = "give_up#v";
         LexicalItemType text2Type = LexicalItemType.SURFACE_TAGGED;
         
         //if lexical items has to be disambiguated

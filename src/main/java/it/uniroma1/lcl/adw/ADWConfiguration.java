@@ -9,7 +9,6 @@ import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-
 public class ADWConfiguration
 {
 	private org.apache.commons.configuration.PropertiesConfiguration config = null;
@@ -187,5 +186,15 @@ public class ADWConfiguration
 	        }
 	    }
 	    return null;
+	}
+	
+	public String getStanfordPOSModel()
+	{
+		return config.getString("stanford.pos.model");
+	}
+	
+	public String getWordNetData()
+	{
+		return config.getString("wordnet.wordnetData3.0");
 	}
 }
