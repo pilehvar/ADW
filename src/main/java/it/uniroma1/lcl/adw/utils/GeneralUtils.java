@@ -1,10 +1,9 @@
 package it.uniroma1.lcl.adw.utils;
 
 import it.uniroma1.lcl.adw.ADWConfiguration;
-import it.uniroma1.lcl.jlt.util.Files;
-import it.uniroma1.lcl.jlt.wordnet.WordNet;
 
 import java.io.BufferedReader;
+import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -162,7 +161,7 @@ public class GeneralUtils
 	 */
 	public static List<String> getWordOffsets(String word, POS tag)
 	{
-		List<IWord> senses = WordNet.getInstance().getSenses(word,tag);
+		List<IWord> senses = WordNetUtils.getInstance().getSenses(word,tag);
 		List<String> wordOffsets = new ArrayList<String>();
 		
 		for(IWord sense : senses)
@@ -186,7 +185,7 @@ public class GeneralUtils
 		
 		try
 		{
-			BufferedReader br = Files.getBufferedReader(ADWConfiguration.getInstance().getOffsetMapPath());
+			BufferedReader br = new BufferedReader(new FileReader(ADWConfiguration.getInstance().getOffsetMapPath()));
 			
 			while(br.ready())
 			{
@@ -195,6 +194,8 @@ public class GeneralUtils
 				
 				map.put(comps[1],comps[0]);
 			}
+			
+			br.close();
 		}
 		catch(Exception e)
 		{
@@ -225,7 +226,7 @@ public class GeneralUtils
 		
 		try
 		{
-			BufferedReader br = Files.getBufferedReader(ADWConfiguration.getInstance().getOffsetMapPath());
+			BufferedReader br = new BufferedReader(new FileReader(ADWConfiguration.getInstance().getOffsetMapPath())); 
 			
 			while(br.ready())
 			{
@@ -234,6 +235,8 @@ public class GeneralUtils
 				
 				map.put(comps[0],comps[1]);
 			}
+			
+			br.close();
 		}
 		catch(Exception e)
 		{

@@ -1,16 +1,18 @@
 package it.uniroma1.lcl.adw.utils;
 
 import it.uniroma1.lcl.adw.semsig.SemSig;
-import it.uniroma1.lcl.jlt.util.Maps;
-import it.uniroma1.lcl.jlt.util.Maps.SortingOrder;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Map.Entry;
 
 public class SemSigUtils 
 {
@@ -19,7 +21,7 @@ public class SemSigUtils
 	{
 		LinkedHashMap<Integer,Float> sortedMap = new LinkedHashMap<Integer,Float>();
 		
-		for(int key : Maps.sortByValue(vector, SortingOrder.DESCENDING).keySet())
+		for(int key : sortByValue(vector).keySet())
 			sortedMap.put(key, vector.get(key));
 		
 		return sortedMap;
@@ -136,6 +138,28 @@ public class SemSigUtils
 			normalizedVector.put(s, vector.get(s)/total);
 		
 		return normalizedVector;
+	}
+
+	public static <K, V extends Comparable<V>> Map<K, V> sortByValue(Map<K, V> map)
+	{
+		Comparator<Map.Entry<K, V>> valueComparator = null;
+		
+		valueComparator = new Comparator<Map.Entry<K, V>>()
+		{
+			public int compare(Entry<K, V> o1, Entry<K, V> o2)
+			{
+				return o2.getValue().compareTo(o1.getValue());
+			}
+		};
+
+		final List<Map.Entry<K, V>> entries = new LinkedList<Map.Entry<K, V>>(map.entrySet());
+
+		Collections.sort(entries, valueComparator);
+		
+		final Map<K, V> result = new LinkedHashMap<K, V>();
+		for (Map.Entry<K, V> entry : entries)
+			result.put(entry.getKey(), entry.getValue());
+		return result;
 	}
 	
 }
