@@ -1,8 +1,9 @@
 ADW
 ===
 
-ADW (Align, Disambiguate and Walk) version 1.0 -- September 1, 2014.
+ADW (Align, Disambiguate and Walk) version 1.0 -- October 13, 2014.
 
+Online demo: http://lcl.uniroma1.it/adw/
 
 CONTENTS
 =========================
@@ -30,19 +31,19 @@ This release version is prepared by Mohammad Taher Pilehvar (Sapienza University
 =========================
 
 1- Download the Semantic signatures (for all the 118K concepts in WordNet 3.0, size ~ 1.4 GB) using the following link:
-http://151.100.179.51/adw/ppvs.30g.5k.tar.bz2
+http://lcl.uniroma1.it/adw/ppvs.30g.5k.tar.bz2
 
 2- Extract the downloaded file in the directory of your choice. 
 
 For example:
 
-	/home/username/resources/
+	/home/username/signatures/
 
 3- Update the `wn30g.ppv.path` entry in the `config/adw.properties` file with the directory containing semantic signatures.
 
 For example:
 
-	wn30g.ppv.path=/home/username/resources/ppvs.30g.5k/
+	wn30g.ppv.path=/home/username/signatures/ppvs.30g.5k/
 
 4- You are ready to go! To get started, continue reading [Quick start](#4-quick-start).
 
