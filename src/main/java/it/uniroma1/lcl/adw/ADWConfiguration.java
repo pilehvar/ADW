@@ -58,23 +58,6 @@ public class ADWConfiguration
 		return instance;
 	}
 	
-	public void setConfigurationFile(File configurationFile)
-	{
-		log.info("Changing configuration properties to " + configurationFile);
-		try
-		{
-			config = new PropertiesConfiguration(configurationFile);
-			config.setBasePath(
-				configurationFile.getParentFile().getAbsolutePath());
-		}
-		catch (ConfigurationException ce)
-		{
-			ce.printStackTrace();
-			log.info("Setting BabelNet to an empty configuration");
-			config = new PropertiesConfiguration();
-		}
-	}
-	
 	public String getPPVPath()
 	{
 		return getPPVPath(LKB.WordNet);
