@@ -2,7 +2,6 @@ package it.uniroma1.lcl.adw.utils;
 
 import it.uniroma1.lcl.adw.ADWConfiguration;
 
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -63,13 +62,14 @@ public class WordNetUtils
 			final Dictionary dict = new Dictionary(new URL("file", null, location));
 			dict.getCache().setMaximumCapacity(Integer.MAX_VALUE);
 			this.dictionary = dict;
+
+			this.dictionary.open();
 		}
-		catch (MalformedURLException mue)
+		catch (Exception mue)
 		{
 			mue.printStackTrace();
 		}
-
-		this.dictionary.open();
+		
 	}
 	
 	private void setAllWordNetWords()
