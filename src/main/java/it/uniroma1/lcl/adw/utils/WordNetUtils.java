@@ -27,6 +27,7 @@ import edu.mit.jwi.item.IWordID;
 import edu.mit.jwi.item.POS;
 import edu.mit.jwi.item.SynsetID;
 import edu.mit.jwi.morph.IStemmer;
+import edu.mit.jwi.morph.WordnetStemmer;
 
 public class WordNetUtils
 {
@@ -64,6 +65,8 @@ public class WordNetUtils
 			this.dictionary = dict;
 
 			this.dictionary.open();
+			
+			wnStemmer = new WordnetStemmer(dict);
 		}
 		catch (Exception mue)
 		{
