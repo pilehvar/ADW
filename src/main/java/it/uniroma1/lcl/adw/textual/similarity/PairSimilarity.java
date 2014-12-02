@@ -293,8 +293,8 @@ public class PairSimilarity
 		{
 			case NONE:
 				//take all the synsets (or Semsigs to be consistent with others) of all the words in the two sides
-				srcSemSigs = SemSigProcess.getInstance().getAllSemSigsFromWordPosList(cookedSentence1, srcTextType, alignmentVecSize);
-				trgSemSigs = SemSigProcess.getInstance().getAllSemSigsFromWordPosList(cookedSentence2, trgTextType, alignmentVecSize);
+				srcSemSigs = SemSigProcess.getInstance().getAllSemSigsFromWordPosList(cookedSentence1, srcTextType, testedVectorSize);
+				trgSemSigs = SemSigProcess.getInstance().getAllSemSigsFromWordPosList(cookedSentence2, trgTextType, testedVectorSize);
 				break;
 				
 				//alignment-based disambiguation
