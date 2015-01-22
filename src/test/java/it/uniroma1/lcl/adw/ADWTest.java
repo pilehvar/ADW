@@ -76,10 +76,10 @@ public class ADWTest
                 measure,
                 text5Type, text6Type);
         
-        assertEquals(0.6346, score1, epsilon);
-        assertEquals(0.5624, score2, epsilon);
-        assertEquals(0.5624, score3, epsilon);
-        assertEquals(0.8593, score4, epsilon);
+        assertEquals(0.5735, score1, epsilon);
+        assertEquals(0.5029, score2, epsilon);
+        assertEquals(0.5029, score3, epsilon);
+        assertEquals(0.7777, score4, epsilon);
         assertEquals(1.0, score5, epsilon);
         assertEquals(1.0, score6, epsilon);
         
