@@ -219,6 +219,12 @@ public class PairSimilarity
 			for(Pair<SemSig,SemSig> sig : alignmentsRev.keySet())
 				trgSigs.add(sig.first);
 			
+			if(alignmentVecSize != testedVectorSize)
+			{
+				srcSigs = getTestVectors(srcSigs);
+				trgSigs = getTestVectors(trgSigs);
+			}
+			
 			return new Pair<List<SemSig>,List<SemSig>>(srcSigs,trgSigs);
 			
 		}
@@ -229,6 +235,19 @@ public class PairSimilarity
 
 		return null;
 	}
+	
+	private List<SemSig> getTestVectors(List<SemSig> alignmentVectors)
+	{
+		List<SemSig> testSigs = new ArrayList<SemSig>();
+		
+		for(SemSig sig : alignmentVectors)
+		{
+			testSigs.add(SemSigProcess.getInstance().getSemSigFromOffset(sig.getOffset(), LKB.WordNetGloss, testedVectorSize));
+		}
+		
+		return testSigs;
+	}
+	
 	
 	public LexicalItemType guessLexicalItemType(String input)
 	{
