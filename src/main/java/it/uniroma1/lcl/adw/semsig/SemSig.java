@@ -30,10 +30,9 @@ import edu.mit.jwi.item.POS;
 public class SemSig
 {
 	private LinkedHashMap<Integer,Float> vector = new LinkedHashMap<Integer,Float>();
-	
-	private String offset;
-	private POS tag;
-	private LKB lkb;
+	private String offset = "null";
+	private POS tag = null;
+	private LKB lkb = null;
 	
 	public void setVector(LinkedHashMap<Integer,Float> v)
 	{
