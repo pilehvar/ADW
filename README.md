@@ -99,7 +99,7 @@ For example:
 
 	ADW pipeLine = new ADW();
 
-	double similarity = pipeLine.getFastSimilarity(text1, text2,
+	double similarity = pipeLine.getPairSimilarity(text1, text2,
         				      disMethod, measure,
        					      srcTextType, trgTextType); 
 	System.out.println(similarity);
