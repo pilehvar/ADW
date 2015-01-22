@@ -198,14 +198,14 @@ public class ADW
 		
         ADW pipeLine = new ADW();
         
-        String text1 = "forgo#v";
-        LexicalItemType text1Type = LexicalItemType.SURFACE_TAGGED;
+        String text1 = "04381183-n";
+        LexicalItemType text1Type = LexicalItemType.SENSE_OFFSETS;
 
         String text2 = "give_up#v";
         LexicalItemType text2Type = LexicalItemType.SURFACE_TAGGED;
         
         //if lexical items has to be disambiguated
-        DisambiguationMethod disMethod = DisambiguationMethod.ALIGNMENT_BASED;
+        DisambiguationMethod disMethod = DisambiguationMethod.NONE;
         
         //measure for comparing semantic signatures
         SignatureComparison measure = new WeightedOverlap(); 
