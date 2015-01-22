@@ -94,7 +94,8 @@ public class SemSigUtils
 		
 		for(SemSig vector : vectors)
 		{
-			vectorsKeyset.addAll(vector.getVector().keySet());
+			if(vector != null)
+				vectorsKeyset.addAll(vector.getVector().keySet());
 		}
 
 		for(int key : vectorsKeyset)
@@ -103,11 +104,14 @@ public class SemSigUtils
 			
 			for(SemSig vector : vectors)
 			{
-				HashMap<Integer, Float> currentV = vector.getVector();
+				HashMap<Integer, Float> currentV = (vector == null)? new HashMap<Integer, Float>() : vector.getVector();
 				
 				if(currentV.containsKey(key))
 					thisKeyValue += currentV.get(key);
 			}
+			
+			if(thisKeyValue == 1)
+				thisKeyValue = 0;
 			
 			thisKeyValue /= size; 
 			overallVector.put(key, thisKeyValue);
