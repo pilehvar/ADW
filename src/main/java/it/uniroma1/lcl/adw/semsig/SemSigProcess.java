@@ -206,27 +206,34 @@ public class SemSigProcess
 				break;
 				
 			case WORD_SENSE:
-				for(String offset : wordPosList)
-					allSemSigs.add(getSemSigFromOffset(offset, LKB.WordNetGloss, alignmentVecSize, true));
+				for(String wordSense : wordPosList)
+					allSemSigs.add(getSemSigFromOffset(wordSense, LKB.WordNetGloss, alignmentVecSize, true));
 				
 				break;
 				
 			case SENSE_KEYS:
-				for(String offset : wordPosList)
-					allSemSigs.add(getSemSigFromOffset(offset, LKB.WordNetGloss, alignmentVecSize, true));
+				for(String senseKeys : wordPosList)
+					allSemSigs.add(getSemSigFromOffset(senseKeys, LKB.WordNetGloss, alignmentVecSize, true));
 				
 				break;
 				
+			//To avoid bias towards more frequent senses, signatures are macro-averaged  
 			case SURFACE_TAGGED:
-				for(String wordPos : wordPosList)
-					allSemSigs.addAll(getWordPosSemSigs(wordPos, LKB.WordNetGloss, alignmentVecSize, true));
+				for(String surfaceTagged : wordPosList)
+				{
+					List<SemSig> vectors = getWordPosSemSigs(surfaceTagged, LKB.WordNetGloss, alignmentVecSize, true);
+					allSemSigs.add(SemSigUtils.averageSemSigs(vectors));
+				}
 				
 				break;
 				
 			case SURFACE:
 				//even in this case the sentence has already been POS tagged
 				for(String wordPos : wordPosList)
-					allSemSigs.addAll(getWordPosSemSigs(wordPos, LKB.WordNetGloss, alignmentVecSize, true));
+				{
+					List<SemSig> vectors = getWordPosSemSigs(wordPos, LKB.WordNetGloss, alignmentVecSize, true); 
+					allSemSigs.add(SemSigUtils.averageSemSigs(vectors));
+				}
 				
 				break;
 				
@@ -311,8 +318,10 @@ public class SemSigProcess
 	
 	public SemSig getSemSigFromOffset(String offset, LKB lkb, int size)
 	{
+		SemSig sig = new SemSig();
+		
 		if(offset == null || offset.equals("null"))
-			return null;
+			return sig;
 		
 		return getSemSigFromOffset(offset, lkb, size, null);
 	}
