@@ -1,9 +1,11 @@
 package it.uniroma1.lcl.adw.comparison;
 
 import it.uniroma1.lcl.adw.semsig.SemSig;
+import it.uniroma1.lcl.adw.semsig.SemSigComparator;
 import it.uniroma1.lcl.adw.utils.SemSigUtils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -92,16 +94,19 @@ public class WeightedOverlap implements SignatureComparison
 		
 		Set<Integer> overlaps = getOverlap(v1, v2);
 		
+		HashMap<Integer,Integer> map1 = SemSigComparator.ListToMap(v1);
+		HashMap<Integer,Integer> map2 = SemSigComparator.ListToMap(v2);
+		
+		int i = 1;
 		for(Integer overlap : overlaps)
 		{
-			nominator += 1.0/((v1.indexOf(overlap)+1)+(v2.indexOf(overlap)+1));
-//			nominator += 1.0/(Math.sqrt((v1.indexOf(overlap)+1)+(v2.indexOf(overlap)+1)));	
-		}
-		
-		for(int i=1; i<=overlaps.size(); i++)
-		{
+//			System.out.println(i+"\t"+map1.get(overlap)+1+"\t"+map2.get(overlap)+1);
+			nominator += 1.0/((map1.get(overlap)+1)+(map2.get(overlap)+1));
+//			nominator += 1.0/(Math.sqrt((map1.get(overlap)+1)+(map2.get(overlap)+1)));
+			
 			normalization += 1.0/((2*i));
 //			normalization += 1.0/(Math.sqrt(2*i));
+			i++;
 		}
 		
 		//if the two signatures have no dimension in common
