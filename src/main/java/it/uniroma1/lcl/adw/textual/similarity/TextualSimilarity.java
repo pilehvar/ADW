@@ -230,7 +230,7 @@ public class TextualSimilarity
 	 */
 	public boolean isOOV(String word, String tag)
 	{
-		if(tag == null || tag.equals("?"))
+		if(tag == null  || tag.trim().length() == 0 || tag.equals("?"))
 			return true;
 		
 		if(allWordNetEntries.get(tag).contains(word))
@@ -527,7 +527,6 @@ public class TextualSimilarity
 				).second);
 				
 		System.out.println(TS.getSenseVectorsFromCookedSentence(TS.cookSentence("Slovakia has not been condemned to the second division and it is logical that it should like to join together with the Czech Republic.").first, LKB.WordNetGloss,0));
-		
 	}
 	
 }
