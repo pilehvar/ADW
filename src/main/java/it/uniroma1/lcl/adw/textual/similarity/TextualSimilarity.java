@@ -1,7 +1,7 @@
 package it.uniroma1.lcl.adw.textual.similarity;
 
 import it.uniroma1.lcl.adw.ADWConfiguration;
-import it.uniroma1.lcl.adw.LexicalItemType;
+import it.uniroma1.lcl.adw.ItemType;
 import it.uniroma1.lcl.adw.comparison.SignatureComparison;
 import it.uniroma1.lcl.adw.semsig.LKB;
 import it.uniroma1.lcl.adw.semsig.SemSig;
@@ -350,7 +350,7 @@ public class TextualSimilarity
 	}
 	
 	
-	public List<SemSig> getSenseVectorsFromOffsetSentence(List<String> offsets, LexicalItemType type, LKB lkb, int vecSize)
+	public List<SemSig> getSenseVectorsFromOffsetSentence(List<String> offsets, ItemType type, LKB lkb, int vecSize)
 	{
 		List<SemSig> vectors = new ArrayList<SemSig>();
 
