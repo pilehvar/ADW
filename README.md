@@ -88,8 +88,8 @@ For example:
 	String text2 = "windmill.n.1";
 
 	//types of the two lexical items
-	LexicalItemType srcTextType = LexicalItemType.SURFACE;  
-	LexicalItemType trgTextType = LexicalItemType.WORD_SENSE;
+	ItemType srcTextType = ItemType.SURFACE;  
+	ItemType trgTextType = ItemType.WORD_SENSE;
 
 	//if lexical items has to be disambiguated
 	DisambiguationMethod disMethod = DisambiguationMethod.ALIGNMENT_BASED;      
