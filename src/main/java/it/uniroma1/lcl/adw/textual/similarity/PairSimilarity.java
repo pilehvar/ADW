@@ -14,7 +14,7 @@ import edu.stanford.nlp.util.Pair;
 import it.uniroma1.lcl.adw.ADW;
 import it.uniroma1.lcl.adw.ADWConfiguration;
 import it.uniroma1.lcl.adw.DisambiguationMethod;
-import it.uniroma1.lcl.adw.LexicalItemType;
+import it.uniroma1.lcl.adw.ItemType;
 import it.uniroma1.lcl.adw.comparison.SignatureComparison;
 import it.uniroma1.lcl.adw.semsig.LKB;
 import it.uniroma1.lcl.adw.semsig.SemSig;
@@ -78,7 +78,7 @@ public class PairSimilarity
 	
 	public Pair<List<String>,List<String>> cookLexicalItem(
 			String text, 
-			LexicalItemType textType,
+			ItemType textType,
 			boolean discardStopwords)
 	{
 		try
@@ -178,8 +178,8 @@ public class PairSimilarity
 	DisambiguateCookedSentence(
 			List<String> cookedSentence1, 
 			List<String> cookedSentence2, 
-			LexicalItemType srcTextType,
-			LexicalItemType trgTextType,
+			ItemType srcTextType,
+			ItemType trgTextType,
 			LKB lkb, 
 			SignatureComparison measure, 
 			int vectorSize, 
@@ -249,23 +249,23 @@ public class PairSimilarity
 	}
 	
 	
-	public LexicalItemType guessLexicalItemType(String input)
+	public ItemType guessLexicalItemType(String input)
 	{
 		String firstWord = input.split(" ")[0];
 		
 		if(firstWord.matches("[0-9]*\\-[anvr]"))
-			return LexicalItemType.SENSE_OFFSETS;
+			return ItemType.SENSE_OFFSETS;
 		
 		if(firstWord.matches("[^ ]*%[0-9]*:[^ ]*"))
-			return LexicalItemType.SENSE_KEYS;
+			return ItemType.SENSE_KEYS;
 		
 		if(WordNetUtils.getInstance().mapWordSenseToIWord(firstWord) != null)
-			return LexicalItemType.WORD_SENSE;
+			return ItemType.WORD_SENSE;
 		
 		if(firstWord.matches("[^ ]*#[nvra]"))
-			return LexicalItemType.SURFACE_TAGGED;
+			return ItemType.SURFACE_TAGGED;
 		
-		return LexicalItemType.SURFACE;
+		return ItemType.SURFACE;
 	}
 	
 	
@@ -286,8 +286,8 @@ public class PairSimilarity
 			String text1, String text2, 
 			DisambiguationMethod disMethod,
 			SignatureComparison measure,
-			LexicalItemType srcTextType,
-			LexicalItemType trgTextType)
+			ItemType srcTextType,
+			ItemType trgTextType)
 	{
 
 		//pre-process sentence pair
@@ -296,8 +296,8 @@ public class PairSimilarity
 		
 		//Mirror pos tagging
 		if(mirrorPOStagging && 
-				srcTextType.equals(LexicalItemType.SURFACE) ||
-				trgTextType.equals(LexicalItemType.SURFACE))
+				srcTextType.equals(ItemType.SURFACE) ||
+				trgTextType.equals(ItemType.SURFACE))
 		{
 			Pair<List<String>, List<String>> aPair  = mirrorPosTags(cookedSentence1, cookedSentence2);
 			
@@ -340,14 +340,14 @@ public class PairSimilarity
 		return SemSigComparator.compare(srcSemSig.getVector(), trgSemSig.getVector(), measure, testedVectorSize, false, true);
 	}
 	
-	public List<List<SemSig>> convertToVectors(List<String> sentence, LexicalItemType type, LKB lkb, int vSize)
+	public List<List<SemSig>> convertToVectors(List<String> sentence, ItemType type, LKB lkb, int vSize)
 	{
 		List<List<SemSig>> firstVectors = new ArrayList<List<SemSig>>();
 		Set<SemSig> firstVectorSet = new HashSet<SemSig>();
 		
-		if(type.equals(LexicalItemType.SENSE_OFFSETS) 
-				|| type.equals(LexicalItemType.SENSE_KEYS)
-				|| type.equals(LexicalItemType.WORD_SENSE))
+		if(type.equals(ItemType.SENSE_OFFSETS) 
+				|| type.equals(ItemType.SENSE_KEYS)
+				|| type.equals(ItemType.WORD_SENSE))
 		{
 			firstVectorSet = new HashSet<SemSig>(TextualSimilarity.getInstance().getSenseVectorsFromOffsetSentence(sentence, type, lkb, vSize));
 		
