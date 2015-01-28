@@ -41,7 +41,7 @@ public class ADW
 		}
 	}
 	
-	public boolean checkType(String input, LexicalItemType type)
+	public boolean checkType(String input, ItemType type)
 	{
 		if(input.trim().length() == 0)
 			return false;
@@ -82,7 +82,7 @@ public class ADW
 		return true;
 	}
 	
-	public Pair<Boolean,String> evaluateInputType(String input, LexicalItemType type)
+	public Pair<Boolean,String> evaluateInputType(String input, ItemType type)
 	{
 		boolean passed = checkType(input, type);
 		
@@ -101,8 +101,8 @@ public class ADW
 			String text1, String text2, 
 			DisambiguationMethod disMethod,
 			SignatureComparison measure,
-			LexicalItemType srcTextType,
-			LexicalItemType trgTextType)
+			ItemType srcTextType,
+			ItemType trgTextType)
 	{
 
 		if(!evaluateInputType(text1, srcTextType).first)
@@ -124,23 +124,23 @@ public class ADW
 	{
         ADW pipeLine = new ADW();
         
-        String text1 = "a mill that is powered by the wind";
-        LexicalItemType text1Type = LexicalItemType.SURFACE;
+        String text1 = "a# mill that is powered by the wind";
+        ItemType text1Type = ItemType.SURFACE;
         
-        String text2 = "windmill#n rotate#v wind#n";
-        LexicalItemType text2Type = LexicalItemType.SURFACE_TAGGED;
+        String text2 = "c#n rotate#v wind#n";
+        ItemType text2Type = ItemType.SURFACE_TAGGED;
         
         String text3 = "windmill.n.1 wind.n.1 rotate.v.1";	//or windmill#n#1
-        LexicalItemType text3Type = LexicalItemType.WORD_SENSE;
+        ItemType text3Type = ItemType.WORD_SENSE;
         
         String text4 = "windmill%1:06:01::  windmill%1:06:01::";
-        LexicalItemType text4Type = LexicalItemType.SENSE_KEYS;
+        ItemType text4Type = ItemType.SENSE_KEYS;
         
         String text5 = "terminate";
-        LexicalItemType text5Type = LexicalItemType.SURFACE;
+        ItemType text5Type = ItemType.SURFACE;
         
         String text6 = "fire#v";
-        LexicalItemType text6Type = LexicalItemType.SURFACE_TAGGED;
+        ItemType text6Type = ItemType.SURFACE_TAGGED;
         
         //if lexical items has to be disambiguated
         DisambiguationMethod disMethod = DisambiguationMethod.ALIGNMENT_BASED;
@@ -199,10 +199,10 @@ public class ADW
         ADW pipeLine = new ADW();
         
         String text1 = "04381183-n";
-        LexicalItemType text1Type = LexicalItemType.SENSE_OFFSETS;
+        ItemType text1Type = ItemType.SENSE_OFFSETS;
 
         String text2 = "give_up#v";
-        LexicalItemType text2Type = LexicalItemType.SURFACE_TAGGED;
+        ItemType text2Type = ItemType.SURFACE_TAGGED;
         
         //if lexical items has to be disambiguated
         DisambiguationMethod disMethod = DisambiguationMethod.NONE;
