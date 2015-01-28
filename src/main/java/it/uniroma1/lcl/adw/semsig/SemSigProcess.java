@@ -1,7 +1,7 @@
 package it.uniroma1.lcl.adw.semsig;
 
 import it.uniroma1.lcl.adw.ADWConfiguration;
-import it.uniroma1.lcl.adw.LexicalItemType;
+import it.uniroma1.lcl.adw.ItemType;
 import it.uniroma1.lcl.adw.utils.GeneralUtils;
 import it.uniroma1.lcl.adw.utils.SemSigUtils;
 import it.uniroma1.lcl.adw.utils.WordNetUtils;
@@ -191,7 +191,7 @@ public class SemSigProcess
 	
 	public List<SemSig> getAllSemSigsFromWordPosList(
 			List<String> wordPosList,
-			LexicalItemType srcTextType,
+			ItemType srcTextType,
 			int alignmentVecSize) 
 			{
 		
