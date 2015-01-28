@@ -17,22 +17,22 @@ public class ADWTest
         ADW pipeLine = new ADW();
 
         String text1 = "a mill that is powered by the wind";
-        LexicalItemType text1Type = LexicalItemType.SURFACE;
+        ItemType text1Type = ItemType.SURFACE;
         
         String text2 = "windmill#n rotate#v wind#n";
-        LexicalItemType text2Type = LexicalItemType.SURFACE_TAGGED;
+        ItemType text2Type = ItemType.SURFACE_TAGGED;
         
         String text3 = "windmill.n.1";
-        LexicalItemType text3Type = LexicalItemType.WORD_SENSE;
+        ItemType text3Type = ItemType.WORD_SENSE;
         
         String text4 = "windmill%1:06:01::";
-        LexicalItemType text4Type = LexicalItemType.SENSE_KEYS;
+        ItemType text4Type = ItemType.SENSE_KEYS;
         
         String text5 = "terminate";
-        LexicalItemType text5Type = LexicalItemType.SURFACE;
+        ItemType text5Type = ItemType.SURFACE;
         
         String text6 = "fire#v";
-        LexicalItemType text6Type = LexicalItemType.SURFACE_TAGGED;
+        ItemType text6Type = ItemType.SURFACE_TAGGED;
         
         //if lexical items has to be disambiguated
         DisambiguationMethod disMethod = DisambiguationMethod.ALIGNMENT_BASED;
@@ -92,22 +92,22 @@ public class ADWTest
         ADW pipeLine = new ADW();
 
         String text1 = "a mill that is powered by the wind";
-        LexicalItemType text1Type = LexicalItemType.SURFACE;
+        ItemType text1Type = ItemType.SURFACE;
         
         String text2 = "windmill#n rotate#v wind#n";
-        LexicalItemType text2Type = LexicalItemType.SURFACE_TAGGED;
+        ItemType text2Type = ItemType.SURFACE_TAGGED;
         
         String text3 = "windmill.n.1";
-        LexicalItemType text3Type = LexicalItemType.WORD_SENSE;
+        ItemType text3Type = ItemType.WORD_SENSE;
         
         String text4 = "windmill%1:06:01::";
-        LexicalItemType text4Type = LexicalItemType.SENSE_KEYS;
+        ItemType text4Type = ItemType.SENSE_KEYS;
         
         String text5 = "terminate";
-        LexicalItemType text5Type = LexicalItemType.SURFACE;
+        ItemType text5Type = ItemType.SURFACE;
         
         String text6 = "fire#v";
-        LexicalItemType text6Type = LexicalItemType.SURFACE_TAGGED;
+        ItemType text6Type = ItemType.SURFACE_TAGGED;
         
         //if lexical items has to be disambiguated
         DisambiguationMethod disMethod = DisambiguationMethod.ALIGNMENT_BASED;
@@ -166,22 +166,22 @@ public class ADWTest
         ADW pipeLine = new ADW();
 
         String text1 = "a mill that is powered by the wind";
-        LexicalItemType text1Type = LexicalItemType.SURFACE;
+        ItemType text1Type = ItemType.SURFACE;
         
         String text2 = "windmill#n rotate#v wind#n";
-        LexicalItemType text2Type = LexicalItemType.SURFACE_TAGGED;
+        ItemType text2Type = ItemType.SURFACE_TAGGED;
         
         String text3 = "windmill.n.1";
-        LexicalItemType text3Type = LexicalItemType.WORD_SENSE;
+        ItemType text3Type = ItemType.WORD_SENSE;
         
         String text4 = "windmill%1:06:01::";
-        LexicalItemType text4Type = LexicalItemType.SENSE_KEYS;
+        ItemType text4Type = ItemType.SENSE_KEYS;
         
         String text5 = "terminate";
-        LexicalItemType text5Type = LexicalItemType.SURFACE;
+        ItemType text5Type = ItemType.SURFACE;
         
         String text6 = "fire#v";
-        LexicalItemType text6Type = LexicalItemType.SURFACE_TAGGED;
+        ItemType text6Type = ItemType.SURFACE_TAGGED;
 
         
         //if lexical items has to be disambiguated
