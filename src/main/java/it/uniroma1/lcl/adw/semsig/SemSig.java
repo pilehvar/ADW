@@ -44,6 +44,7 @@ public class SemSig
 	public void setVector(TIntFloatMap v)
 	{
 		this.vector = v;
+                this.sortedIndices = null;
 	}
 	
 	public void setOffset(String o)
