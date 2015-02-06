@@ -77,8 +77,8 @@ public class WeightedOverlap implements SignatureComparison
                 if (overlaps.isEmpty())
                     return 0;
                 
-		TIntIntMap indexToPosition1 = new TIntIntHashMap(overlaps.size());
-                TIntIntMap indexToPosition2 = new TIntIntHashMap(overlaps.size());                
+		TIntIntMap indexToPosition1 = new TIntIntHashMap(v1.length);
+                TIntIntMap indexToPosition2 = new TIntIntHashMap(v2.length);
                 for (int i = 0; i < v1.length; ++i)
                     indexToPosition1.put(v1[i], i);
                 for (int i = 0; i < v2.length; ++i)
