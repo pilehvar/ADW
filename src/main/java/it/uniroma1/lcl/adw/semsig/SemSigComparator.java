@@ -8,11 +8,13 @@ import it.uniroma1.lcl.adw.utils.SemSigUtils;
 import it.uniroma1.lcl.adw.utils.WordNetUtils;
 
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 
 import edu.mit.jwi.item.IWord;
 import edu.mit.jwi.item.POS;
+
+import gnu.trove.map.TIntFloatMap;
+import gnu.trove.map.hash.TIntFloatHashMap;
 
 
 public class SemSigComparator
@@ -26,8 +28,8 @@ public class SemSigComparator
 	}
 	
 	public static Double compareSortedNormalizedMaps(
-			LinkedHashMap<Integer,Float> vec1, 
-			LinkedHashMap<Integer,Float> vec2, 
+			TIntFloatMap vec1, 
+			TIntFloatMap vec2, 
 			SignatureComparison measure, 
 			int size)
 	{
@@ -49,8 +51,8 @@ public class SemSigComparator
 	}
 	
 	public static Double compare(
-			LinkedHashMap<Integer,Float> vec1, 
-			LinkedHashMap<Integer,Float> vec2, 
+			TIntFloatMap vec1, 
+			TIntFloatMap vec2, 
 			SignatureComparison measure, int size, 
 			boolean sorted,
 			boolean normalized)
@@ -67,8 +69,8 @@ public class SemSigComparator
 		
 		if(!normalized)
 		{
-			vec1 = new LinkedHashMap<Integer,Float>(SemSigUtils.normalizeVector(vec1));
-			vec2 = new LinkedHashMap<Integer,Float>(SemSigUtils.normalizeVector(vec2));
+			vec1 = new TIntFloatHashMap(SemSigUtils.normalizeVector(vec1));
+			vec2 = new TIntFloatHashMap(SemSigUtils.normalizeVector(vec2));
 		}
 		
 		//The vector should be normalized here, sorting is done within the compare implementation

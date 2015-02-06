@@ -2,6 +2,11 @@ package it.uniroma1.lcl.adw.utils;
 
 import it.uniroma1.lcl.adw.semsig.SemSig;
 
+import gnu.trove.iterator.TIntFloatIterator;
+import gnu.trove.map.TIntFloatMap;
+import gnu.trove.map.hash.TIntFloatHashMap;
+
+import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -14,19 +19,53 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
 
+import gnu.trove.iterator.TFloatIterator;
+import gnu.trove.iterator.TIntIterator;
+import gnu.trove.map.TIntFloatMap;
+import gnu.trove.map.TIntIntMap;
+import gnu.trove.map.hash.TIntFloatHashMap;
+import gnu.trove.map.hash.TIntIntHashMap;
+import gnu.trove.set.TIntSet;
+import gnu.trove.set.hash.TIntHashSet;
+
+
 public class SemSigUtils 
 {
 	
-	public static LinkedHashMap<Integer,Float> sortVector(Map<Integer,Float> vector)
-	{
-		LinkedHashMap<Integer,Float> sortedMap = new LinkedHashMap<Integer,Float>();
+	// public static TIntFloatMap sortVector(Map<Integer,Float> vector)
+	// {
+	// 	TIntFloatMap sortedMap = new TIntFloatMap();
 		
-		for(int key : sortByValue(vector).keySet())
-			sortedMap.put(key, vector.get(key));
+	// 	for(int key : sortByValue(vector).keySet())
+	// 		sortedMap.put(key, vector.get(key));
 		
-		return sortedMap;
-	}
-	
+	// 	return sortedMap;
+	// }
+
+    public static int[] getSortedIndices(TIntFloatMap vector)
+    {
+        // NOTE: it's probably possible to do this using purely primitive
+        // operations without having to resort to pushing things into an
+        // Index[].  However, this code is much cleaner to have and since we
+        // sort at most once per vector and the result is memoized, we don't
+        // lose too much from the Object-based sorting.
+        Index[] keyValPairs = new Index[vector.size()];
+        TIntFloatIterator iter = vector.iterator();
+        int i = 0;
+        while (iter.hasNext())
+        {
+                iter.advance();
+                keyValPairs[i++] = new Index(iter.key(), iter.value());
+        }
+
+        Arrays.sort(keyValPairs);
+        int[] sortedIndices = new int[keyValPairs.length];
+        for (i = 0; i < keyValPairs.length; ++i)
+            sortedIndices[i] = keyValPairs[i].key;
+        
+        return sortedIndices;
+    }
+
 	/**
 	 * Truncates a vector to the top-n elements
 	 * @param vector
@@ -34,52 +73,65 @@ public class SemSigUtils
 	 * @param normalize
 	 * @return truncated vector
 	 */	
-	public static LinkedHashMap<Integer,Float> truncateVector(Map<Integer,Float> vector, boolean sorted, int size, boolean normalize)
+	public static TIntFloatMap truncateVector(TIntFloatMap vector, boolean sorted, int size, boolean normalize)
 	{
-		LinkedHashMap<Integer,Float> truncatedMap = new LinkedHashMap<Integer,Float>();
-		
-		List<Integer> keys = (sorted)? new ArrayList<Integer>(vector.keySet()) : new ArrayList<Integer>(sortVector(vector).keySet());
-		
-		int i = 0;
-		for(int key : keys)
-		{
-			truncatedMap.put(key, vector.get(key));
-			
-			if(i++ >= size) break;
-		}
-		
+		TIntFloatMap truncatedMap = new TIntFloatHashMap();
+
+                int[] sortedIndices = getSortedIndices(vector);
+
+                float valSum = 0f;
+
+                for (int i = 0; i < size && i < sortedIndices.length; ++i)
+                {
+                    int index = sortedIndices[i];
+                    float val = vector.get(index);
+                    truncatedMap.put(index, val);
+                    valSum += val;
+                }
+
 		if(normalize)
 		{
-			truncatedMap = new LinkedHashMap<Integer,Float>(normalizeVector(truncatedMap));
+                    // Iterate over all the value again and normalize.  We do
+                    // this here (in-place0 to avoid having to create another
+                    // Map instance of the truncated data.
+                    for (int i = 0; i < size && i < sortedIndices.length; ++i)
+                    {
+                            int index = sortedIndices[i];
+                            float val = vector.get(index);
+                            truncatedMap.put(index, val / valSum);
+                    }
+                    
 		}
-		
+
 		return truncatedMap;
 	}
 	
-	/**
-	 * Truncates a vector to the top-n elements (assumes that the input vector is already sorted)
-	 * @param vector
-	 * @param size
-	 * @param normalize
-	 * @return truncated vector
-	 */
-	public static LinkedHashMap<Integer,Float> truncateSortedVector(LinkedHashMap<Integer,Float> vector, int size)
-	{
-		LinkedHashMap<Integer,Float> sortedMap = new LinkedHashMap<Integer,Float>();
+	// /**
+	//  * Truncates a vector to the top-n elements (assumes that the input vector is already sorted)
+	//  * @param vector
+	//  * @param size
+	//  * @param normalize
+	//  * @return truncated vector
+	//  */
+	// public static TIntFloatMap truncateSortedVector(TIntFloatMap vector, int size)
+	// {
+	// 	TIntFloatMap sortedMap = new TIntFloatMap();
 		
-		int i = 1;
-		for(int key : vector.keySet())
-		{
-			sortedMap.put(key, vector.get(key));
-			if(i++ > size) break;
-		}
+	// 	int i = 1;
+	// 	for(int key : vector.keySet())
+	// 	{
+	// 		sortedMap.put(key, vector.get(key));
+	// 		if(i++ > size) break;
+	// 	}
 		
-		return new LinkedHashMap<Integer,Float>(normalizeVector(sortedMap));
-	}
+	// 	return new TIntFloatMap(normalizeVector(sortedMap));
+	// }
 
 	/**
-	 * Averages a set of semantic signatures, 
-	 * equivalent to obtaining a semantic signature by initializing the PPR from all the corresponding nodes
+	 * Averages a set of semantic signatures, equivalent to obtaining a
+	 * semantic signature by initializing the PPR from all the corresponding
+	 * nodes
+         *
 	 * @param vectors
 	 * 			a list of vectors
 	 * @return
@@ -88,36 +140,27 @@ public class SemSigUtils
 	public static SemSig averageSemSigs(List<SemSig> vectors)
 	{
 		int size = vectors.size();
-		LinkedHashMap<Integer,Float> overallVector = new LinkedHashMap<Integer,Float>();
-		
-		Set<Integer> vectorsKeyset = new HashSet<Integer>();
-		
-		for(SemSig vector : vectors)
-		{
-			if(vector != null)
-				vectorsKeyset.addAll(vector.getVector().keySet());
-		}
+		TIntFloatMap overallVector = new TIntFloatHashMap();
 
-		for(int key : vectorsKeyset)
-		{
-			float thisKeyValue = 0;
-			
-			for(SemSig vector : vectors)
-			{
-				HashMap<Integer, Float> currentV = (vector == null)? new HashMap<Integer, Float>() : vector.getVector();
-				
-				if(currentV.containsKey(key))
-					thisKeyValue += currentV.get(key);
-			}
-			
-			if(thisKeyValue == 1)
-				thisKeyValue = 0;
-			
-			thisKeyValue /= size; 
-			overallVector.put(key, thisKeyValue);
-		}
+                // Sum the vectors
+                for (SemSig ss : vectors) {
+                    TIntFloatIterator iter = ss.getVector().iterator();
+                    while (iter.hasNext()) {
+                        iter.advance();
+                        int key = iter.key();
+                        float curVal = overallVector.get(key);
+                        overallVector.put(key, curVal + iter.value());
+                    }
+                }
 
-		SemSig overallSig = new SemSig();
+                // Normalize by the number of vectors
+                TIntFloatIterator iter = overallVector.iterator();
+                while (iter.hasNext()) {
+                    iter.advance();
+                    iter.setValue(iter.value() / size);
+                }
+                
+                SemSig overallSig = new SemSig();
 		overallSig.setVector(overallVector);
 		
 		return overallSig;
@@ -129,19 +172,23 @@ public class SemSigUtils
 	 * @param vector
 	 * @return
 	 */
-	public static Map<Integer,Float> normalizeVector(Map<Integer,Float> vector)
+	public static TIntFloatMap normalizeVector(TIntFloatMap vector)
 	{
 		float total = 0;
+
+                TFloatIterator iter = vector.valueCollection().iterator();
+                while (iter.hasNext())
+                       total += iter.next();
+                
+                TIntFloatMap normalized = new TIntFloatHashMap(vector.size());
 		
-		for(int s : vector.keySet())
-			total += vector.get(s);
-		
-		Map<Integer,Float> normalizedVector = new HashMap<Integer,Float>();
-		
-		for(int s : vector.keySet())
-			normalizedVector.put(s, vector.get(s)/total);
-		
-		return normalizedVector;
+                TIntFloatIterator iter2 = vector.iterator();
+                while (iter2.hasNext())
+                {
+                        iter2.advance();
+                        normalized.put(iter2.key(), iter2.value() / total);
+                }		
+		return normalized;
 	}
 
 	public static <K, V extends Comparable<V>> Map<K, V> sortByValue(Map<K, V> map)

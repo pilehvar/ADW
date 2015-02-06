@@ -11,6 +11,15 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
 
+import gnu.trove.iterator.TIntIterator;
+import gnu.trove.map.TIntFloatMap;
+import gnu.trove.map.TIntIntMap;
+import gnu.trove.map.hash.TIntFloatHashMap;
+import gnu.trove.map.hash.TIntIntHashMap;
+import gnu.trove.set.TIntSet;
+import gnu.trove.set.hash.TIntHashSet;
+
+
 /**
  * A non-parametric approach for comparing two multinomial distributions proposed in:
  * 
@@ -28,90 +37,72 @@ public class WeightedOverlap implements SignatureComparison
 {
 	public double compare(SemSig v1, SemSig v2, boolean sortedNormalized) 
 	{
-		return compare(v1.getVector(),v2.getVector(),sortedNormalized);
+            TIntSet overlap = new TIntHashSet(v1.getVector().keySet());
+            overlap.retainAll(v2.getVector().keySet());
+            return compare(overlap,
+                           v1.getSortedIndices(),
+                           v2.getSortedIndices());
 	}
 
 	public double compare(
-			LinkedHashMap<Integer, Float> v1,
-			LinkedHashMap<Integer, Float> v2,
+			TIntFloatMap v1,
+			TIntFloatMap v2,
 			boolean sorted) 
 	{
-		
-		if(!sorted)   
-		{
-			v1 = SemSigUtils.sortVector(v1);
-			v2 = SemSigUtils.sortVector(v2);
-		}
-		
-		List<Integer> v2Keys = new ArrayList<Integer>(v2.keySet());
-		List<Integer> v1Keys = new ArrayList<Integer>(v1.keySet());
-		
-		return compare(v1Keys,v2Keys);
+            TIntSet overlap = new TIntHashSet(v1.keySet());
+            overlap.retainAll(v2.keySet());
+
+            return compare(overlap,
+                           SemSigUtils.getSortedIndices(v1),
+                           SemSigUtils.getSortedIndices(v2));
 	}
 	
-	//old implementation, not suitable for truncated vectors with small overlaps
-//	public double compare(List<Integer> v1,
-//						  List<Integer> v2) 
-//	{
-//
-//		double overlaps = 0;
-//		double normalization = 0;
-//		
-//		HashMap<Integer,Integer> map = SemSigComparator.ListToMap(v2);
-//		
-//		int index = 0;
-//		
-//		for(Integer s : v1)
-//		{
-//			//works only on the overlapping dimensions of v1 and v2
-//			if(v2.contains(s))
-//			{
-//				overlaps += 1.0/((index+1)+(map.get(s)+1));	
-//				normalization += 1.0/(2*(index+1));
-//				index++;
-//			}
-//		}
-//		
-//		//if the two signatures have no dimension in common
-//		if(overlaps == 0 || normalization == 0)
-//			return 0;
-//		
-//		return overlaps/normalization;
-//	}
-	
 	/**
-	 * New implementation of Weighted Overlap that better suits the case when only a small part of two vectors overlap,
-	 * which is also the case for the provided vectors that are truncated to top-5000 elements (of the original 117,500) 
-	 * Also, to have a smoother distribution of scores, a square-root function has been added to the formula.
+	 * New implementation of Weighted Overlap that better suits the case
+	 * when only a small part of two vectors overlap, which is also the case
+	 * for the provided vectors that are truncated to top-5000 elements (of
+	 * the original 117,500) Also, to have a smoother distribution of
+	 * scores, a square-root function has been added to the formula.
+         *
 	 * @param v1 sorted list of dimensions in the first vector (smaller)
 	 * @param v2 sorted list of dimensions in the second vector (larger)
 	 * @return
 	 */
-	public static double compareSmallerWithBigger(List<Integer> v1, List<Integer> v2) 
+        public static double compareSmallerWithBigger(TIntSet overlaps, int[] v1, int[] v2) 
 	{
 		double nominator = 0;
 		double normalization = 0;
-		
-		Set<Integer> overlaps = getOverlap(v1, v2);
-		
-		HashMap<Integer,Integer> map1 = SemSigComparator.ListToMap(v1);
-		HashMap<Integer,Integer> map2 = SemSigComparator.ListToMap(v2);
-		
+
+                //if the two signatures have no dimension in common
+                if (overlaps.isEmpty())
+                    return 0;
+                
+		TIntIntMap indexToPosition1 = new TIntIntHashMap(v1.length);
+                TIntIntMap indexToPosition2 = new TIntIntHashMap(v2.length);
+                for (int i = 0; i < v1.length; ++i)
+                    indexToPosition1.put(v1[i], i);
+                for (int i = 0; i < v2.length; ++i)
+                    indexToPosition2.put(v2[i], i);	
+               
 		int i = 1;
-		for(Integer overlap : overlaps)
+                TIntIterator iter = overlaps.iterator();
+                while (iter.hasNext()) 
 		{
+                    int overlap = iter.next();
 //			System.out.println(i+"\t"+map1.get(overlap)+1+"\t"+map2.get(overlap)+1);
-			nominator += 1.0/((map1.get(overlap)+1)+(map2.get(overlap)+1));
+
+                    nominator += 1.0 /
+                        ((indexToPosition1.get(overlap)+1) + (indexToPosition2.get(overlap)+1));
 //			nominator += 1.0/(Math.sqrt((map1.get(overlap)+1)+(map2.get(overlap)+1)));
 			
-			normalization += 1.0/((2*i));
+                    normalization += 1.0/((2*i));
 //			normalization += 1.0/(Math.sqrt(2*i));
-			i++;
+                    i++;
 		}
 		
 		//if the two signatures have no dimension in common
 		if(nominator == 0 || normalization == 0)
-			return 0;
+                    return 0;
 		
 		return ((double)nominator/normalization);
 	}
@@ -127,13 +118,13 @@ public class WeightedOverlap implements SignatureComparison
 		return overlap;
 	}
 	
-	public static double compare(List<Integer> v1, List<Integer> v2)
+        public static double compare(TIntSet overlaps, int[] v1, int[] v2)
 	{
 		//in order to normalize by the smaller vector
-		if(v1.size() > v2.size())
-			return compareSmallerWithBigger(v2, v1);
+		if(v1.length > v2.length)
+                        return compareSmallerWithBigger(overlaps, v2, v1);
 		else
-			return compareSmallerWithBigger(v1, v2);
+                        return compareSmallerWithBigger(overlaps, v1, v2);
 	}
 	
 }

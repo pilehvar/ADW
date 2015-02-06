@@ -1,6 +1,12 @@
 package it.uniroma1.lcl.adw.semsig;
 
-import java.util.LinkedHashMap;
+import it.uniroma1.lcl.adw.utils.SemSigUtils;
+
+import gnu.trove.iterator.TIntFloatIterator;
+import gnu.trove.map.TIntFloatMap;
+import gnu.trove.map.hash.TIntFloatHashMap;
+
+import java.util.Collections;
 
 import edu.mit.jwi.item.POS;
 
@@ -29,14 +35,16 @@ import edu.mit.jwi.item.POS;
  */
 public class SemSig
 {
-	private LinkedHashMap<Integer,Float> vector = new LinkedHashMap<Integer,Float>();
+	private TIntFloatMap vector = new TIntFloatHashMap();
 	private String offset = "null";
 	private POS tag = null;
 	private LKB lkb = null;
-	
-	public void setVector(LinkedHashMap<Integer,Float> v)
+        private int[] sortedIndices = null;
+    
+	public void setVector(TIntFloatMap v)
 	{
 		this.vector = v;
+                this.sortedIndices = null;
 	}
 	
 	public void setOffset(String o)
@@ -59,16 +67,25 @@ public class SemSig
 		this.vector.put(offset, prob);
 	}
 	
-	public LinkedHashMap<Integer,Float> getVector()
+	public TIntFloatMap getVector()
 	{
 		return this.vector;
 	}
 
-	public LinkedHashMap<Integer,Float> getVector(int size)
+	public TIntFloatMap getVector(int size)
 	{
 		return this.vector;
 	}
-	
+
+        public int[] getSortedIndices()
+        {
+            if (sortedIndices == null && vector != null)
+            {
+                sortedIndices = SemSigUtils.getSortedIndices(vector);
+            }
+            return sortedIndices;
+        }
+
 	public String getOffset()
 	{
 		return this.offset;
