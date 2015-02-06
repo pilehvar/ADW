@@ -3,15 +3,10 @@ package it.uniroma1.lcl.adw.comparison;
 import static org.junit.Assert.*;
 import it.uniroma1.lcl.adw.comparison.WeightedOverlap;
 
-import java.util.LinkedHashMap;
-
 import org.junit.Test;
 
 import gnu.trove.map.TIntFloatMap;
-import gnu.trove.map.TIntIntMap;
 import gnu.trove.map.hash.TIntFloatHashMap;
-import gnu.trove.map.hash.TIntIntHashMap;
-
 
 public class WeightedOverlapTest
 {
