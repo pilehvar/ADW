@@ -68,14 +68,16 @@ public class RandG
 		List<SemSig> v1s = SemSigProcess.getInstance().getWordSemSigs(word1, tag, LKB.WordNetGloss, size, true);
 		List<SemSig> v2s = SemSigProcess.getInstance().getWordSemSigs(word2, tag, LKB.WordNetGloss, size, true);
 		
+		WeightedOverlap WO = new WeightedOverlap();
+		
 		double maxSim = (smallerBetter)? 1000 : 0;
 		
 		for(SemSig v1 : v1s)
 		{
 			for(SemSig v2 : v2s)
 			{
-//				double currentSim = WeightedOverlap.compare(new ArrayList<Integer>(v1.getVector(size).keySet()), new ArrayList<Integer>(v2.getVector(size).keySet()));
-				double currentSim = Cosine.cosineSimilarity(v1.getVector(size), v2.getVector(size));
+				double currentSim = WO.compare(v1.getVector(size), v2.getVector(size), false);
+//				double currentSim = Cosine.cosineSimilarity(v1.getVector(size), v2.getVector(size));
 				
 				if(smallerBetter)
 				{
