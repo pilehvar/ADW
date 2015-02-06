@@ -2,7 +2,8 @@ package it.uniroma1.lcl.adw.comparison;
 
 import it.uniroma1.lcl.adw.semsig.SemSig;
 
-import java.util.LinkedHashMap;
+import gnu.trove.iterator.TIntFloatIterator;
+import gnu.trove.map.TIntFloatMap;
 
 public class JensenShannon implements SignatureComparison
 {
@@ -13,8 +14,8 @@ public class JensenShannon implements SignatureComparison
 	}
 
 	public double compare(
-			LinkedHashMap<Integer, Float> v1,
-			LinkedHashMap<Integer, Float> v2,
+			TIntFloatMap v1,
+			TIntFloatMap v2,
 			boolean sorted) 
 	{
 		
@@ -22,37 +23,35 @@ public class JensenShannon implements SignatureComparison
 		
 		double JS = 0.0;
 		
-		if(v1.keySet().size() == 0 || v2.keySet().size() == 0)
+		if(v1.size() == 0 || v2.size() == 0)
 			return JS;
-		
-		for(Integer key : v1.keySet())
-		{
-			double P = v1.get(key);
-			double Q = 0;
-			
-			if(v2.containsKey(key))
-			{
-				Q = v2.get(key);
-			}
 
-			Q = (P+Q)/2;
-			JS += Math.log(P/Q) * P;
-		}
-	
-		for(Integer key : v2.keySet())
-		{
-			double P = v2.get(key);
-			double Q = 0;
-			
-			if(v1.containsKey(key))
-			{
-				Q = v1.get(key);
-			}
+                TIntFloatIterator iter = v1.iterator();
+                while (iter.hasNext())
+                {
+                    iter.advance();
+                    int key = iter.key();
+                    double P = iter.value();
+                    // if v2 doesn't have the key, Q is 0
+                    double Q = v2.get(key);
+                    double M = (P + Q) / 2;
 
-			Q = (P+Q)/2;
-			JS += Math.log(P/Q) * P;
-		}
-		
+                    JS += Math.log(P/M) * P;
+                }
+
+                iter = v2.iterator();
+                while (iter.hasNext())
+                {
+                    iter.advance();
+                    int key = iter.key();
+                    double P = iter.value();
+                    // if v1 doesn't have the key, Q is 0
+                    double Q = v1.get(key);
+                    double M = (P + Q) / 2;
+
+                    JS += Math.log(P/M) * P;
+                }
+                		
 		return JS;
 	}
 

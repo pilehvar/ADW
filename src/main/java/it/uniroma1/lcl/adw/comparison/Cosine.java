@@ -5,6 +5,11 @@ import it.uniroma1.lcl.adw.semsig.SemSig;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import gnu.trove.iterator.TFloatIterator;
+import gnu.trove.iterator.TIntFloatIterator;
+import gnu.trove.map.TIntFloatMap;
+
+
 public class Cosine implements SignatureComparison 
 {
 
@@ -14,24 +19,30 @@ public class Cosine implements SignatureComparison
 	}
 
 	public double compare(
-			LinkedHashMap<Integer, Float> v1,
-			LinkedHashMap<Integer, Float> v2,
+			TIntFloatMap v1,
+			TIntFloatMap v2,
 			boolean sorted) 
 	{
 		//sorted or not, it does not change the comparison procedure
 		return cosineSimilarity(v1, v2);
 	}
 	
-	public static double norm2(Map<Integer, Float> vector)
+	public static double norm2(TIntFloatMap vector)
 	{		
 		double norm = 0.0;
-		for(Number value : vector.values()) norm += value.doubleValue() * value.doubleValue();		
+                TFloatIterator iter = vector.valueCollection().iterator();
+                while (iter.hasNext())
+                {
+                    float f = iter.next();
+                    norm += f * f;
+                }
+                    
 		norm = Math.sqrt(norm);
 		
 		return norm;
 	}
 	
-	public static double cosineSimilarity(Map<Integer, Float> u, Map<Integer, Float> v)
+	public static double cosineSimilarity(TIntFloatMap u, TIntFloatMap v)
 	{
 		double u_norm = norm2(u);
 		if( u_norm == 0 ) return 0;
@@ -42,11 +53,11 @@ public class Cosine implements SignatureComparison
 		return dotProduct(u, v)/(u_norm * v_norm);
 	}
 	
-	public static double dotProduct(Map<Integer, Float> vector1, Map<Integer, Float> vector2)
+	public static double dotProduct(TIntFloatMap vector1, TIntFloatMap vector2)
 	{
 		double dotProduct = 0.0;
-		
-		Map<Integer, Float> temp = null;
+                
+		TIntFloatMap temp = null;
 		
 		if (vector1.size() > vector2.size())
 		{
@@ -54,13 +65,16 @@ public class Cosine implements SignatureComparison
 			vector1 = vector2;
 			vector2 = temp;
 		}
-		
-		for(int key : vector1.keySet())
+
+                TIntFloatIterator iter = vector1.iterator();
+                while (iter.hasNext()) 
 		{
-			Number value = vector2.get(key);
-			if( value == null ) continue;
-			
-			dotProduct += vector1.get(key).doubleValue() * value.doubleValue(); 
+                    iter.advance();
+                    int key = iter.key();
+                    float f = vector2.get(key);
+                    if (f == 0)
+                        continue;
+                    dotProduct += iter.value() * f;
 		}
 		
 		return dotProduct;

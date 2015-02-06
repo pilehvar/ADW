@@ -22,6 +22,10 @@ import org.apache.commons.logging.LogFactory;
 import edu.mit.jwi.item.IWord;
 import edu.mit.jwi.item.POS;
 
+import gnu.trove.map.TIntFloatMap;
+import gnu.trove.map.hash.TIntFloatHashMap;
+
+
 /**
  * a class to work with {@link SemSig}s
  * @author pilehvar
@@ -104,7 +108,7 @@ public class SemSigProcess
 		String offset = GeneralUtils.getOffsetFromPath(path);
 		vector.setOffset(offset);
 		
-		LinkedHashMap<Integer,Float> map = new LinkedHashMap<Integer,Float>(); 
+		TIntFloatMap map = new TIntFloatHashMap(size); 
 		
 		if(!new File(path).exists())
 		{
@@ -158,7 +162,7 @@ public class SemSigProcess
 		}
 		
 		if(size != MAX_VECTOR_SIZE)
-			map = SemSigUtils.truncateSortedVector(map,size);
+                        map = SemSigUtils.truncateVector(map, true, size, true);
 
 		vector.setVector(map);
 		

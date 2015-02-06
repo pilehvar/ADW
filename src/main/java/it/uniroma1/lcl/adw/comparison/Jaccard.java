@@ -4,9 +4,11 @@ import it.uniroma1.lcl.adw.semsig.SemSig;
 import it.uniroma1.lcl.adw.utils.SemSigUtils;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
+
+import gnu.trove.iterator.TIntIterator;
+import gnu.trove.map.TIntFloatMap;
 
 /**
  * Counts the number of overlapping dimensions across the two signatures
@@ -23,33 +25,21 @@ public class Jaccard implements SignatureComparison
 	}
 
 	public double compare(
-			LinkedHashMap<Integer, Float> v1,
-			LinkedHashMap<Integer, Float> v2,
+			TIntFloatMap v1,
+			TIntFloatMap v2,
 			boolean sorted) 
 	{
-		if(!sorted)   
-		{
-			v1 = SemSigUtils.sortVector(v1);
-			v2 = SemSigUtils.sortVector(v2);
-		}
+            int overlaps = 0;
 		
-		double overlaps = 0;
-		List<Integer> v1Keys = new ArrayList<Integer>(v1.keySet());
-		
-		Set<Integer> v2KeysSet = v2.keySet();
-		
-		for(Integer s : v1Keys)
-		{
-			if(v2KeysSet.contains(s))
-			{
-				overlaps++;
-			}
-		}
-		
-		if(overlaps == 0)
-			return 0;
-		
-		return 2.0*overlaps/(v1.size()+v2.size());
+            TIntIterator iter = v1.keySet().iterator();
+            while (iter.hasNext())
+            {
+                int key = iter.next();
+                if (v2.containsKey(key))
+                    overlaps++;
+            }
+            
+            return overlaps / (double)(v1.size() + v2.size() - overlaps);
 	}
 
 }
