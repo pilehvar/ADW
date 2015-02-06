@@ -49,7 +49,7 @@ public class Cosine implements SignatureComparison
 		
 		double v_norm = norm2(v);
 		if( v_norm == 0 ) return 0;
-		
+
 		return dotProduct(u, v)/(u_norm * v_norm);
 	}
 	

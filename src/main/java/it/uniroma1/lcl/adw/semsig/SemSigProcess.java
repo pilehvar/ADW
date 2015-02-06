@@ -121,7 +121,7 @@ public class SemSigProcess
 		try
 		{
 			BufferedReader br = new BufferedReader(new FileReader(path));
-			
+
 			float prob;
 			float lastProb = 0.0f;
 			int lineCounter = 1;
@@ -160,7 +160,8 @@ public class SemSigProcess
 		{
 			e.printStackTrace();
 		}
-		
+
+                
 		if(size != MAX_VECTOR_SIZE)
                         map = SemSigUtils.truncateVector(map, true, size, true);
 

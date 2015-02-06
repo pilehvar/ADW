@@ -82,7 +82,7 @@ public class WeightedOverlap implements SignatureComparison
                 for (int i = 0; i < v1.length; ++i)
                     indexToPosition1.put(v1[i], i);
                 for (int i = 0; i < v2.length; ++i)
-                    indexToPosition1.put(v2[i], i);	
+                    indexToPosition2.put(v2[i], i);	
                
 		int i = 1;
                 TIntIterator iter = overlaps.iterator();

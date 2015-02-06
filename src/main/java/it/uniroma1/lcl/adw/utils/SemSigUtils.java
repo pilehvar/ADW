@@ -51,16 +51,18 @@ public class SemSigUtils
         // lose too much from the Object-based sorting.
         Index[] keyValPairs = new Index[vector.size()];
         TIntFloatIterator iter = vector.iterator();
+        int i = 0;
         while (iter.hasNext())
         {
                 iter.advance();
-                int key = iter.key();
+                keyValPairs[i++] = new Index(iter.key(), iter.value());
         }
 
         Arrays.sort(keyValPairs);
         int[] sortedIndices = new int[keyValPairs.length];
-        for (int i = 0; i < keyValPairs.length; ++i)
+        for (i = 0; i < keyValPairs.length; ++i)
             sortedIndices[i] = keyValPairs[i].key;
+        
         return sortedIndices;
     }
 
@@ -78,14 +80,15 @@ public class SemSigUtils
                 int[] sortedIndices = getSortedIndices(vector);
 
                 float valSum = 0f;
-                
+
                 for (int i = 0; i < size && i < sortedIndices.length; ++i)
                 {
                     int index = sortedIndices[i];
                     float val = vector.get(index);
                     truncatedMap.put(index, val);
+                    valSum += val;
                 }
-		
+
 		if(normalize)
 		{
                     // Iterate over all the value again and normalize.  We do
@@ -99,7 +102,7 @@ public class SemSigUtils
                     }
                     
 		}
-		
+
 		return truncatedMap;
 	}
 	
