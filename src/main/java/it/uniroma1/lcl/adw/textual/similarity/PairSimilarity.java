@@ -111,20 +111,18 @@ public class PairSimilarity
 								snse.getPOS()));
 						break;
 				
-					case SURFACE:
-						
-						out = TextualSimilarity.getInstance().cookSentence(text);
-						cookedSentence = out.first;	
-						break;
-			
 					case SURFACE_TAGGED:
-						for(String word : text.split(" "))
-							cookedSentence.add(word);
-				
+						cookedSentence.add(item);
 						break;
 				
 				}
 				
+			}
+			
+			if(textType.equals(ItemType.SURFACE))
+			{
+				out = TextualSimilarity.getInstance().cookSentence(text);
+				cookedSentence = out.first;	
 			}
 		
 		
