@@ -27,7 +27,7 @@ public class StanfordLemmatizer
 	
 	public WordLemmaTag lemmatize(String word, String tag)
 	{ 
-	    final String lemma = Morphology.stemStatic(word, tag).word();
+	    final String lemma = Morphology.stemStaticSynchronized(word, tag).word();
 	    return new WordLemmaTag(word, lemma, tag);
 	}
 
