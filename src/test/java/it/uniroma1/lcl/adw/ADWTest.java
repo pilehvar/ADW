@@ -11,7 +11,7 @@ public class ADWTest
 {
 	private static final double epsilon = 0.01;
 	
-//	@Test
+	@Test
 	public void testWeightedOverlap() 
 	{
         ADW pipeLine = new ADW();
@@ -86,7 +86,7 @@ public class ADWTest
 	}
 	
 	
-//	@Test
+	@Test
 	public void testCosine() 
 	{
         ADW pipeLine = new ADW();
