@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import edu.stanford.nlp.ling.HasWord;
-import edu.stanford.nlp.ling.Sentence;
+import edu.stanford.nlp.ling.SentenceUtils;
 import edu.stanford.nlp.ling.TaggedWord;
 import edu.stanford.nlp.tagger.maxent.MaxentTagger;
 
@@ -37,7 +37,7 @@ public class StanfordPOSTagger
 	
 	public List<TaggedWord> tag(String sentence)
 	{
-		List<HasWord> tokens = Sentence.toWordList(sentence.split("\\s+"));
+		List<HasWord> tokens = SentenceUtils.toWordList(sentence.split("\\s+"));
 		return tag(tokens);
 	}
 	
