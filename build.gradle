@@ -1,28 +1,53 @@
-group 'ADW'
-version '4.0.1'
+group 'it.uniroma1.lcl'
+version '4.0.2'
 
 apply plugin: 'java'
 apply plugin: 'maven'
 
 sourceCompatibility = 1.8
 
+
 buildscript {
-    repositories { jcenter() }
+    repositories {
+        jcenter()
+        mavenCentral()
+    }
     dependencies {
-        classpath 'com.github.jengelman.gradle.plugins:shadow:1.2.2'
+        classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.1'
         classpath "org.jfrog.buildinfo:build-info-extractor-gradle:3.2.0"
-        classpath "io.spring.gradle:dependency-management-plugin:1.0.4.RELEASE"
-        classpath "org.springframework.boot:spring-boot-gradle-plugin:1.5.9.RELEASE"
+        classpath "io.spring.gradle:dependency-management-plugin:1.0.3.RELEASE"
     }
 }
-apply plugin: 'com.github.johnrengelman.shadow'  // plugin to generate shadow (all-in-one) jar
+
+apply plugin: "com.jfrog.artifactory-upload"  // plugin to interface with Agolo's Artifactory server
 apply plugin: "io.spring.dependency-management" // plugin to manage transitive dependencies
+
+
+// artifactory configuration to upload output JAR to Agolo's internal repository
+artifactory {
+    contextUrl = "${artifactory_contextUrl}"
+    publish {
+        repository {
+            repoKey = "${artifactory_publish_repokey}"
+            username = "${artifactory_user}"
+            password = "${artifactory_password}"
+            ivy {
+                mavenCompatible = true
+            }
+        }
+    }
+    resolve {
+        repository {
+            repoKey = "${artifactory_resolve_repokey}"
+            username = "${artifactory_user}"
+            password = "${artifactory_password}"
+            maven = true
+        }
+    }
+}
 
 repositories {
     mavenCentral()
-    maven {
-        url("https://plugins.gradle.org/m2/")
-    }
 }
 
 dependencies {
@@ -36,7 +61,7 @@ dependencies {
     compile 'edu.stanford.nlp:stanford-corenlp:3.8.0:models'
     compile 'edu.mit:jwi:2.2.3'
     compile 'org.apache.commons:commons-math3:3.2'
-
+    compile 'it.uniroma1.lcl.jlt:jlt:2.0.0'
 
     testCompile 'junit:junit:4.12',
             'org.hamcrest:hamcrest-core:1.3',
